@@ -17,6 +17,9 @@ dependencies:
   go_router: ^16.0.0
   shared_preferences: ^2.5.3
   flutter_secure_storage: ^4.2.1
+  flutter_local_notifications: ^19.3.0
+  timezone: ^0.10.1
+  flutter_timezone: ^4.1.1
 
 dev_dependencies:
   flutter_test:
