@@ -13,6 +13,7 @@ dependencies:
   drift_flutter: ^0.2.4
   path_provider: ^2.1.5
   sqlite3_flutter_libs: ^0.5.34
+  flutter_riverpod: ^2.6.1
 
 dev_dependencies:
   flutter_test:
@@ -20,6 +21,9 @@ dev_dependencies:
   flutter_lints: ^6.0.0
   drift_dev: ^2.27.0
   build_runner: ^2.5.4
+  riverpod_generator: ^2.6.5
+  riverpod_lint: ^2.6.5
+  custom_lint: ^0.7.5
 
 flutter:
   uses-material-design: true
