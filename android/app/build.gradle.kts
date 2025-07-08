@@ -7,8 +7,8 @@ plugins {
 
 android {
     namespace = "com.syncflow.habit_tracker"
-    compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    compileSdk = 34
+    ndkVersion = 23
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
