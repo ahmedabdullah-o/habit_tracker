@@ -14,6 +14,7 @@ dependencies:
   path_provider: ^2.1.5
   sqlite3_flutter_libs: ^0.5.34
   flutter_riverpod: ^2.6.1
+  go_router: ^16.0.0
 
 dev_dependencies:
   flutter_test:
