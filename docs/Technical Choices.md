@@ -19,7 +19,7 @@
 ## Local Storage
 
 - **`drift`** - for relational data storage.
-- **`shared_preferences`** - for simple data storage.
+- **`shared_preferences`** - for simple data storage like app settings or user preferences.
 - **`flutter_secure_storage`** - for storing sensitive data (e.g. user data, tokens, passwords) if any.
 
 ---
