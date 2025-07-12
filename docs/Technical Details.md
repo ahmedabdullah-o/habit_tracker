@@ -1,3 +1,5 @@
+# Technical Details
+
 ## Database Schema
 all db schema versions are recorded in the [db_schema](./media/db_schema) folder.
 
