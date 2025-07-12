@@ -31,7 +31,7 @@
     It just works! especially for iOS.
 
 ---
-# Timezone
+## Timezone
 
 - **`flutter_timezone`** - easily fetch local timezone.
 - **`timezone`** - timezone database
@@ -50,7 +50,7 @@
 **`permission_handler`**
 
 ---
-# Analytics & Crash reports
+## Analytics & Crash reports
 
 - **`posthog_flutter`** - Analytics.
 - **`sentry_flutter`** - Crash reports.
