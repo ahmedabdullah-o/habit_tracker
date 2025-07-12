@@ -1,3 +1,5 @@
+# Technical Choices
+
 ## Architecture
 
 **Clean Architecture.**
