@@ -2,6 +2,10 @@ name: Lint and Analyze
 
 on: [push, pull_request]
 
+permissions:
+  contents: read
+
+
 jobs:
   super-linter:
     name: Super Linter (General Files)
@@ -16,6 +20,7 @@ jobs:
         uses: github/super-linter@v6
         env:
           VALIDATE_ALL_CODEBASE: true
+          VALIDATE_DART: false
           DEFAULT_BRANCH: main
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
