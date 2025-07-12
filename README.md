@@ -17,11 +17,12 @@ Your participation is welcome!
 - Branch names should follow this format:  
   `<type>/<short-description>`
 - **Accepted types and use cases:**
-    - **feature/**: For developing new features or significant enhancements.
-    - **bugfix/**: For fixing bugs or resolving issues.
-    - **hotfix/**: For urgent or critical fixes, typically in production.
-    - **chore/**: For routine tasks, maintenance, or non-feature changes (e.g., dependency updates, refactoring).
-    - **docs/**: For documentation changes only.
-    - **test/**: For adding, updating, or improving tests.
+  - **feature/**: For developing new features or significant enhancements.
+  - **bugfix/**: For fixing bugs or resolving issues.
+  - **hotfix/**: For urgent or critical fixes, typically in production.
+  - **chore/**: For routine tasks, maintenance, or non-feature changes (e.g., dependency updates, refactoring).
+  - **docs/**: For documentation changes only.
+  - **test/**: For adding, updating, or improving tests.
+  - **devops/**: For CI/CD and github actions.
 
 This convention keeps the project organized and streamlines collaboration.
