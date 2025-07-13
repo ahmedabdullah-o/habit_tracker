@@ -23,6 +23,6 @@ Your participation is welcome!
   - **chore/**: For routine tasks, maintenance, or non-feature changes (e.g., dependency updates, refactoring).
   - **docs/**: For documentation changes only.
   - **test/**: For adding, updating, or improving tests.
-  - **devops/**: For CI/CD and github actions.
+  - **devops/**: For CI/CD and GitHub actions.
 
 This convention keeps the project organized and streamlines collaboration.
