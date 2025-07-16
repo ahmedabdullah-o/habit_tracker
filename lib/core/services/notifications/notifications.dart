@@ -76,7 +76,6 @@ class Notifications implements Inotifications {
 
   @override
   void init() {
-    _requestPermissions();
     final initializationSettings = InitializationSettings(
       android: AndroidInitializationSettings('@mipmap/ic_launcher'),
       iOS: DarwinInitializationSettings(
@@ -110,6 +109,8 @@ class Notifications implements Inotifications {
       final notificationChannel = value.android.toAndroidNotificationChannel;
       androidImplementation?.createNotificationChannel(notificationChannel);
     }
+    //Request permissions
+    _requestPermissions();
   }
 
   @override
@@ -137,5 +138,10 @@ class Notifications implements Inotifications {
   @override
   void cancelAll() {
     flutterLocalNotificationsPlugin.cancelAll();
+  }
+
+  @override
+  void cancelAllScheduled() {
+    flutterLocalNotificationsPlugin.cancelAllPendingNotifications();
   }
 }

@@ -5,4 +5,5 @@ abstract class Inotifications {
   Future<void> send(NotificationModel notificationModel);
   void cancel(int notificationId);
   void cancelAll();
+  void cancelAllScheduled();
 }
