@@ -1,6 +1,7 @@
 import 'package:habit_tracker/core/services/notifications/notification_model.dart';
 
 abstract class Inotifications {
+  void requestPermissions();
   void init();
   Future<void> send(NotificationModel notificationModel);
   void cancel(int notificationId);
