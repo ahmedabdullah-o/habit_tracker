@@ -53,29 +53,6 @@ class Notifications implements Inotifications {
   }
 
   @override
-  Future<void> requestPermissions() async {
-    if (Platform.isIOS || Platform.isMacOS) {
-      await flutterLocalNotificationsPlugin
-          .resolvePlatformSpecificImplementation<
-            IOSFlutterLocalNotificationsPlugin
-          >()
-          ?.requestPermissions(alert: true, badge: true, sound: true);
-      await flutterLocalNotificationsPlugin
-          .resolvePlatformSpecificImplementation<
-            MacOSFlutterLocalNotificationsPlugin
-          >()
-          ?.requestPermissions(alert: true, badge: true, sound: true);
-    } else if (Platform.isAndroid) {
-      final AndroidFlutterLocalNotificationsPlugin? androidImplementation =
-          flutterLocalNotificationsPlugin
-              .resolvePlatformSpecificImplementation<
-                AndroidFlutterLocalNotificationsPlugin
-              >();
-      await androidImplementation?.requestNotificationsPermission();
-    }
-  }
-
-  @override
   void init() {
     final initializationSettings = InitializationSettings(
       android: AndroidInitializationSettings('@mipmap/ic_launcher'),
@@ -112,6 +89,39 @@ class Notifications implements Inotifications {
     }
     //Request permissions
     requestPermissions();
+  }
+
+  @override
+  Future<bool?> isPermissionGranted() async {
+    if (Platform.isAndroid) {
+      return _isAndroidNotificationsEnabled();
+    } else if (Platform.isIOS) {
+      return _isDarwinNotificationsEnabled();
+    }
+    return false;
+  }
+
+  @override
+  Future<void> requestPermissions() async {
+    if (Platform.isIOS || Platform.isMacOS) {
+      await flutterLocalNotificationsPlugin
+          .resolvePlatformSpecificImplementation<
+            IOSFlutterLocalNotificationsPlugin
+          >()
+          ?.requestPermissions(alert: true, badge: true, sound: true);
+      await flutterLocalNotificationsPlugin
+          .resolvePlatformSpecificImplementation<
+            MacOSFlutterLocalNotificationsPlugin
+          >()
+          ?.requestPermissions(alert: true, badge: true, sound: true);
+    } else if (Platform.isAndroid) {
+      final AndroidFlutterLocalNotificationsPlugin? androidImplementation =
+          flutterLocalNotificationsPlugin
+              .resolvePlatformSpecificImplementation<
+                AndroidFlutterLocalNotificationsPlugin
+              >();
+      await androidImplementation?.requestNotificationsPermission();
+    }
   }
 
   @override
