@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:habit_tracker/core/enums/notifications_enums.dart';
+import 'package:habit_tracker/core/extensions/notifications_extensions.dart';
 import 'package:habit_tracker/core/services/notifications/inotifications.dart';
 import 'package:habit_tracker/core/services/notifications/notification_model.dart';
 
@@ -47,6 +49,31 @@ class Notifications implements Inotifications {
     }
   }
 
+  Future<bool?> _isAndroidNotificationsEnabled() async {
+    final bool? isEnabled = await flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >()
+        ?.areNotificationsEnabled();
+    return isEnabled;
+  }
+
+  Future<bool?> _isDarwinNotificationsEnabled() async {
+    final NotificationsEnabledOptions? checkEnabled =
+        await flutterLocalNotificationsPlugin
+            .resolvePlatformSpecificImplementation<
+              IOSFlutterLocalNotificationsPlugin
+            >()
+            ?.checkPermissions() ??
+        await flutterLocalNotificationsPlugin
+            .resolvePlatformSpecificImplementation<
+              MacOSFlutterLocalNotificationsPlugin
+            >()
+            ?.checkPermissions();
+    final bool? isEnabled = checkEnabled?.isEnabled;
+    return isEnabled;
+  }
+
   @override
   void init() {
     _requestPermissions();
@@ -54,6 +81,8 @@ class Notifications implements Inotifications {
       android: AndroidInitializationSettings('@mipmap/ic_launcher'),
       iOS: DarwinInitializationSettings(
         notificationCategories: [
+          // General Notifications
+          DarwinNotificationCategory('general'),
           // Normal habit notification
           DarwinNotificationCategory(
             'habit',
@@ -65,17 +94,40 @@ class Notifications implements Inotifications {
         ],
       ),
     );
+    //Initialize Plugin
     flutterLocalNotificationsPlugin.initialize(
       initializationSettings,
       onDidReceiveNotificationResponse: selectNotificationStream.add,
       onDidReceiveBackgroundNotificationResponse: notificationTapBackground,
     );
+    //Create channels
+    final androidImplementation = flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >();
+
+      for (var value in NotificationDetailsEnum.values) {
+        final notificationChannel =
+            value.android.toAndroidNotificationChannel;
+        androidImplementation?.createNotificationChannel(notificationChannel);
+      }
   }
 
   @override
-  Future<void> send(NotificationModel notificationModel) {
-    // TODO: implement send
-    throw UnimplementedError();
+  Future<void> send(NotificationModel notificationModel) async {
+    bool? isAndroidNotificationsEnabled =
+        await _isAndroidNotificationsEnabled();
+    bool? isDarwinNotificationsEnabled = await _isDarwinNotificationsEnabled();
+    if ((isAndroidNotificationsEnabled ?? false) ||
+        (isDarwinNotificationsEnabled ?? false)) {
+      flutterLocalNotificationsPlugin.show(
+        notificationModel.id,
+        notificationModel.title,
+        notificationModel.body,
+        notificationModel.notificationDetails.details,
+        payload: notificationModel.payload,
+      );
+    }
   }
 
   @override

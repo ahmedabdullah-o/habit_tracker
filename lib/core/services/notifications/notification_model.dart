@@ -1,8 +1,10 @@
+import 'package:habit_tracker/core/enums/notifications_enums.dart';
+
 class NotificationModel {
   int id;
   String title;
   String body;
-  String channelName;
+  NotificationDetailsEnum notificationDetails;
   String? subtext;
   String? payload;
 
@@ -10,7 +12,7 @@ class NotificationModel {
     this.id,
     this.title,
     this.body, {
-    this.channelName = 'habit',
+    this.notificationDetails = NotificationDetailsEnum.general,
     this.subtext,
     this.payload,
   });
