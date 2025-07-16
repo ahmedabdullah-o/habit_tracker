@@ -3,11 +3,11 @@ import 'dart:io';
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
+import 'package:timezone/timezone.dart';
 import 'package:habit_tracker/core/enums/notifications_enums.dart';
 import 'package:habit_tracker/core/extensions/notifications_extensions.dart';
 import 'package:habit_tracker/core/services/notifications/inotifications.dart';
 import 'package:habit_tracker/core/services/notifications/notification_model.dart';
-import 'package:timezone/timezone.dart';
 
 /// Streams are created so that app can respond to notification-related events
 /// since the plugin is initialized in the `main` function
@@ -26,8 +26,9 @@ void notificationTapBackground(NotificationResponse notificationResponse) {
 }
 
 class Notifications implements Inotifications {
-  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-      FlutterLocalNotificationsPlugin();
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
+  
+  Notifications(this.flutterLocalNotificationsPlugin);
 
   Future<bool?> _isAndroidNotificationsEnabled() async {
     final bool? isEnabled = await flutterLocalNotificationsPlugin
