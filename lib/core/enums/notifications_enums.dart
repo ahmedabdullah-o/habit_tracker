@@ -45,13 +45,13 @@ enum NotificationDetailsEnum {
   );
 
   const NotificationDetailsEnum(this.details);
-  
+
   final NotificationDetails details;
-  
+
   // Helper methods
   AndroidNotificationDetails get android => details.android!;
   DarwinNotificationDetails get iOS => details.iOS!;
-  
+
   // Get by name
   static NotificationDetailsEnum? fromName(String name) {
     try {

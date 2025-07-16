@@ -3,6 +3,6 @@ import 'package:habit_tracker/core/services/notifications/notification_model.dar
 abstract class Inotifications {
   void init();
   Future<void> send(NotificationModel notificationModel);
-  Future<void> cancel(int notificationId);
-  Future<void> cancelAll();
+  void cancel(int notificationId);
+  void cancelAll();
 }

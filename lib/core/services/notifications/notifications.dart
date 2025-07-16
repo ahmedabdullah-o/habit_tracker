@@ -106,11 +106,10 @@ class Notifications implements Inotifications {
           AndroidFlutterLocalNotificationsPlugin
         >();
 
-      for (var value in NotificationDetailsEnum.values) {
-        final notificationChannel =
-            value.android.toAndroidNotificationChannel;
-        androidImplementation?.createNotificationChannel(notificationChannel);
-      }
+    for (var value in NotificationDetailsEnum.values) {
+      final notificationChannel = value.android.toAndroidNotificationChannel;
+      androidImplementation?.createNotificationChannel(notificationChannel);
+    }
   }
 
   @override
@@ -131,14 +130,12 @@ class Notifications implements Inotifications {
   }
 
   @override
-  Future<void> cancel(int notificationId) {
-    // TODO: implement cancel
-    throw UnimplementedError();
+  void cancel(int notificationId) {
+    flutterLocalNotificationsPlugin.cancel(notificationId);
   }
 
   @override
-  Future<void> cancelAll() {
-    // TODO: implement cancelAll
-    throw UnimplementedError();
+  void cancelAll() {
+    flutterLocalNotificationsPlugin.cancelAll();
   }
 }
