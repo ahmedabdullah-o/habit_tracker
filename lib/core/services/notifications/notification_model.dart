@@ -5,7 +5,6 @@ class NotificationModel {
   String title;
   String body;
   NotificationDetailsEnum notificationDetails;
-  String? subtext;
   String? payload;
 
   NotificationModel(
@@ -13,7 +12,6 @@ class NotificationModel {
     this.title,
     this.body, {
     this.notificationDetails = NotificationDetailsEnum.general,
-    this.subtext,
     this.payload,
   });
 }

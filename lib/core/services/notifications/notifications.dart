@@ -2,10 +2,12 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:habit_tracker/core/enums/notifications_enums.dart';
 import 'package:habit_tracker/core/extensions/notifications_extensions.dart';
 import 'package:habit_tracker/core/services/notifications/inotifications.dart';
 import 'package:habit_tracker/core/services/notifications/notification_model.dart';
+import 'package:timezone/timezone.dart';
 
 /// Streams are created so that app can respond to notification-related events
 /// since the plugin is initialized in the `main` function
@@ -139,6 +141,27 @@ class Notifications implements Inotifications {
         payload: notificationModel.payload,
       );
     }
+  }
+
+  @override
+  Future<void> schedule(
+    NotificationModel notificationModel,
+    DateTime scheduleAt,
+    DateTimeComponents matchDateTimeCompoenents,
+  ) async {
+    final locationName = await FlutterTimezone.getLocalTimezone();
+    final location = getLocation(locationName);
+    final tzDateTime = TZDateTime.from(scheduleAt, location);
+    await flutterLocalNotificationsPlugin.zonedSchedule(
+      notificationModel.id,
+      notificationModel.title,
+      notificationModel.body,
+      tzDateTime,
+      payload: notificationModel.payload,
+      notificationModel.notificationDetails.details,
+      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      matchDateTimeComponents: matchDateTimeCompoenents,
+    );
   }
 
   @override
