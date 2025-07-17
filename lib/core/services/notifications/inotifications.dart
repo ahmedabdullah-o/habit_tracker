@@ -8,9 +8,9 @@ abstract class Inotifications {
   Future<void> send(NotificationModel notificationModel);
   Future<void> schedule(
     NotificationModel notificationModel,
-    DateTime scheduleAt,
-    DateTimeComponents matchDateTimeComponents,
-  );
+    DateTime scheduleAt, {
+    DateTimeComponents? matchDateTimeComponents,
+  });
   void cancel(int notificationId);
   void cancelAll();
   void cancelAllScheduled();

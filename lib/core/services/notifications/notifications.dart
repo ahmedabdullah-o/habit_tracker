@@ -3,7 +3,8 @@ import 'dart:io';
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
-import 'package:timezone/timezone.dart';
+import 'package:timezone/standalone.dart' as tz;
+import 'package:timezone/data/latest.dart' as tz;
 import 'package:habit_tracker/core/enums/notifications_enums.dart';
 import 'package:habit_tracker/core/extensions/notifications_extensions.dart';
 import 'package:habit_tracker/core/services/notifications/inotifications.dart';
@@ -27,7 +28,7 @@ void notificationTapBackground(NotificationResponse notificationResponse) {
 
 class Notifications implements Inotifications {
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
-  
+
   Notifications(this.flutterLocalNotificationsPlugin);
 
   Future<bool?> _isAndroidNotificationsEnabled() async {
@@ -57,6 +58,7 @@ class Notifications implements Inotifications {
 
   @override
   void init() {
+    tz.initializeTimeZones();
     final initializationSettings = InitializationSettings(
       android: AndroidInitializationSettings('@mipmap/ic_launcher'),
       iOS: DarwinInitializationSettings(
@@ -90,6 +92,8 @@ class Notifications implements Inotifications {
       final notificationChannel = value.android.toAndroidNotificationChannel;
       androidImplementation?.createNotificationChannel(notificationChannel);
     }
+    //Init timezone database
+
     //Request permissions
     requestPermissions();
   }
@@ -147,12 +151,12 @@ class Notifications implements Inotifications {
   @override
   Future<void> schedule(
     NotificationModel notificationModel,
-    DateTime scheduleAt,
-    DateTimeComponents matchDateTimeCompoenents,
-  ) async {
+    DateTime scheduleAt, {
+    DateTimeComponents? matchDateTimeComponents,
+  }) async {
     final locationName = await FlutterTimezone.getLocalTimezone();
-    final location = getLocation(locationName);
-    final tzDateTime = TZDateTime.from(scheduleAt, location);
+    final location = tz.getLocation(locationName);
+    final tzDateTime = tz.TZDateTime.from(scheduleAt, location);
     await flutterLocalNotificationsPlugin.zonedSchedule(
       notificationModel.id,
       notificationModel.title,
@@ -161,7 +165,7 @@ class Notifications implements Inotifications {
       payload: notificationModel.payload,
       notificationModel.notificationDetails.details,
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      matchDateTimeComponents: matchDateTimeCompoenents,
+      matchDateTimeComponents: matchDateTimeComponents,
     );
   }
 
