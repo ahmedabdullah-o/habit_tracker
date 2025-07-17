@@ -1,0 +1,186 @@
+import 'dart:async';
+import 'dart:io';
+
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_timezone/flutter_timezone.dart';
+import 'package:timezone/standalone.dart' as tz;
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:habit_tracker/core/enums/notifications_enums.dart';
+import 'package:habit_tracker/core/extensions/notifications_extensions.dart';
+import 'package:habit_tracker/core/services/notifications/inotifications.dart';
+import 'package:habit_tracker/core/services/notifications/notification_model.dart';
+
+/// Streams are created so that app can respond to notification-related events
+/// since the plugin is initialized in the `main` function
+final StreamController<NotificationResponse> selectNotificationStream =
+    StreamController<NotificationResponse>.broadcast();
+
+@pragma('vm:entry-point')
+void notificationTapBackground(NotificationResponse notificationResponse) {
+  if (notificationResponse.actionId == 'habit_snooze') {
+    // TODO:implement habit_snooze action
+    throw UnimplementedError();
+  } else if (notificationResponse.actionId == 'habit_done') {
+    // TODO:implement habit_done action
+    throw UnimplementedError();
+  }
+}
+
+class Notifications implements Inotifications {
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
+
+  Notifications(this.flutterLocalNotificationsPlugin);
+
+  Future<bool?> _isAndroidNotificationsEnabled() async {
+    final bool? isEnabled = await flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >()
+        ?.areNotificationsEnabled();
+    return isEnabled;
+  }
+
+  Future<bool?> _isDarwinNotificationsEnabled() async {
+    final NotificationsEnabledOptions? checkEnabled =
+        await flutterLocalNotificationsPlugin
+            .resolvePlatformSpecificImplementation<
+              IOSFlutterLocalNotificationsPlugin
+            >()
+            ?.checkPermissions() ??
+        await flutterLocalNotificationsPlugin
+            .resolvePlatformSpecificImplementation<
+              MacOSFlutterLocalNotificationsPlugin
+            >()
+            ?.checkPermissions();
+    final bool? isEnabled = checkEnabled?.isEnabled;
+    return isEnabled;
+  }
+
+  @override
+  void init() {
+    tz.initializeTimeZones();
+    final initializationSettings = InitializationSettings(
+      android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+      iOS: DarwinInitializationSettings(
+        notificationCategories: [
+          // General Notifications
+          DarwinNotificationCategory('general'),
+          // Normal habit notification
+          DarwinNotificationCategory(
+            'habit',
+            actions: [
+              DarwinNotificationAction.plain('habit_snooze', 'snooze'),
+              DarwinNotificationAction.plain('habit_done', 'done'),
+            ],
+          ),
+        ],
+      ),
+    );
+    //Initialize Plugin
+    flutterLocalNotificationsPlugin.initialize(
+      initializationSettings,
+      onDidReceiveNotificationResponse: selectNotificationStream.add,
+      onDidReceiveBackgroundNotificationResponse: notificationTapBackground,
+    );
+    //Create channels
+    final androidImplementation = flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >();
+
+    for (var value in NotificationDetailsEnum.values) {
+      final notificationChannel = value.android.toAndroidNotificationChannel;
+      androidImplementation?.createNotificationChannel(notificationChannel);
+    }
+    //Init timezone database
+
+    //Request permissions
+    requestPermissions();
+  }
+
+  @override
+  Future<bool?> isPermissionGranted() async {
+    if (Platform.isAndroid) {
+      return _isAndroidNotificationsEnabled();
+    } else if (Platform.isIOS) {
+      return _isDarwinNotificationsEnabled();
+    }
+    return false;
+  }
+
+  @override
+  Future<void> requestPermissions() async {
+    if (Platform.isIOS || Platform.isMacOS) {
+      await flutterLocalNotificationsPlugin
+          .resolvePlatformSpecificImplementation<
+            IOSFlutterLocalNotificationsPlugin
+          >()
+          ?.requestPermissions(alert: true, badge: true, sound: true);
+      await flutterLocalNotificationsPlugin
+          .resolvePlatformSpecificImplementation<
+            MacOSFlutterLocalNotificationsPlugin
+          >()
+          ?.requestPermissions(alert: true, badge: true, sound: true);
+    } else if (Platform.isAndroid) {
+      final AndroidFlutterLocalNotificationsPlugin? androidImplementation =
+          flutterLocalNotificationsPlugin
+              .resolvePlatformSpecificImplementation<
+                AndroidFlutterLocalNotificationsPlugin
+              >();
+      await androidImplementation?.requestNotificationsPermission();
+    }
+  }
+
+  @override
+  Future<void> send(NotificationModel notificationModel) async {
+    bool? isAndroidNotificationsEnabled =
+        await _isAndroidNotificationsEnabled();
+    bool? isDarwinNotificationsEnabled = await _isDarwinNotificationsEnabled();
+    if ((isAndroidNotificationsEnabled ?? false) ||
+        (isDarwinNotificationsEnabled ?? false)) {
+      flutterLocalNotificationsPlugin.show(
+        notificationModel.id,
+        notificationModel.title,
+        notificationModel.body,
+        notificationModel.notificationDetails.details,
+        payload: notificationModel.payload,
+      );
+    }
+  }
+
+  @override
+  Future<void> schedule(
+    NotificationModel notificationModel,
+    DateTime scheduleAt, {
+    DateTimeComponents? matchDateTimeComponents,
+  }) async {
+    final locationName = await FlutterTimezone.getLocalTimezone();
+    final location = tz.getLocation(locationName);
+    final tzDateTime = tz.TZDateTime.from(scheduleAt, location);
+    await flutterLocalNotificationsPlugin.zonedSchedule(
+      notificationModel.id,
+      notificationModel.title,
+      notificationModel.body,
+      tzDateTime,
+      payload: notificationModel.payload,
+      notificationModel.notificationDetails.details,
+      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      matchDateTimeComponents: matchDateTimeComponents,
+    );
+  }
+
+  @override
+  void cancel(int notificationId) {
+    flutterLocalNotificationsPlugin.cancel(notificationId);
+  }
+
+  @override
+  void cancelAll() {
+    flutterLocalNotificationsPlugin.cancelAll();
+  }
+
+  @override
+  void cancelAllScheduled() {
+    flutterLocalNotificationsPlugin.cancelAllPendingNotifications();
+  }
+}
