@@ -1,4 +1,5 @@
 import 'package:drift/drift.dart';
+import 'package:habit_tracker/core/db/tables/categories.dart';
 
 class Habits extends Table {
   late final id = integer().autoIncrement()();
@@ -17,4 +18,6 @@ class Habits extends Table {
   late final changedAt = dateTime()();
   late final isArchived = boolean().withDefault(const Constant(false))();
   late final isDeleted = boolean().withDefault(const Constant(false))();
+
+  
 }

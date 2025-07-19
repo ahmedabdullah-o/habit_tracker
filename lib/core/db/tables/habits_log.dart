@@ -1,7 +1,8 @@
 import 'package:drift/drift.dart';
+import 'package:habit_tracker/core/db/tables/habits.dart';
 import 'package:habit_tracker/core/enums/db_enums.dart';
 
-@TableIndex(name: 'habit_log_creation_time_idx', columns: {#habit, #datetime})
+@TableIndex(name: 'habit_log_creation_time_idx', columns: {#habit, #creationDatetime})
 class HabitsLog extends Table {
   late final id = integer().autoIncrement()();
   late final habit = integer().references(Habits, #id)();
