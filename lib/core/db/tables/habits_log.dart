@@ -1,13 +1,15 @@
 import 'package:drift/drift.dart';
 import 'package:habit_tracker/core/db/tables/habits.dart';
-import 'package:habit_tracker/core/enums/db_enums.dart';
+import 'package:habit_tracker/core/db/tables/habits_details.dart';
 
-@TableIndex(name: 'habit_log_creation_time_idx', columns: {#habit, #creationDatetime})
+@TableIndex(
+  name: 'habit_log_creation_time_idx',
+  columns: {#habit, #logDatetime},
+)
 class HabitsLog extends Table {
-  late final id = integer().autoIncrement()();
-  late final habit = integer().references(Habits, #id)();
-  late final creationDatetime = dateTime().withDefault(currentDateAndTime)();
-
-  /// Default value is 3 (none).
-  late final state = intEnum<HabitsLogState>().withDefault(const Constant(3))();
+  late final id = integer().autoIncrement()(),
+      habit = integer().references(Habits, #id)(),
+      habitsDetailsVersion = integer().references(HabitsDetails, #version)(),
+      logDatetime = dateTime().withDefault(currentDateAndTime)(),
+      state = real().withDefault(const Constant(0))();
 }
