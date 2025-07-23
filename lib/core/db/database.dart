@@ -18,7 +18,9 @@ class Database extends _$Database implements Idatabase {
   Future<int> insertHabit(HabitData habitData) async {
     final reminderTime =
         "${habitData.reminderTime.hour.toString().padLeft(2, '0')}:${habitData.reminderTime.minute.toString().padLeft(2, '0')}";
-    final habit = await into(habits).insert(HabitsCompanion.insert());
+    final habit = await into(habits).insert(HabitsCompanion.insert(
+      // TODO: googleSub = API request / shared_pref fetch data
+    ));
     into(habitsDetails).insert(
       HabitsDetailsCompanion.insert(
         habitId: habit,

@@ -33,12 +33,12 @@ class $HabitsTable extends Habits with TableInfo<$HabitsTable, Habit> {
     requiredDuringInsert: false,
     defaultValue: const Constant(1),
   );
-  static const VerificationMeta _googleUserIdMeta = const VerificationMeta(
-    'googleUserId',
+  static const VerificationMeta _googleSubMeta = const VerificationMeta(
+    'googleSub',
   );
   @override
-  late final GeneratedColumn<String> googleUserId = GeneratedColumn<String>(
-    'google_user_id',
+  late final GeneratedColumn<String> googleSub = GeneratedColumn<String>(
+    'google_sub',
     aliasedName,
     true,
     type: DriftSqlType.string,
@@ -75,7 +75,7 @@ class $HabitsTable extends Habits with TableInfo<$HabitsTable, Habit> {
   List<GeneratedColumn> get $columns => [
     id,
     currentVersion,
-    googleUserId,
+    googleSub,
     createdAt,
     isDeleted,
   ];
@@ -103,13 +103,10 @@ class $HabitsTable extends Habits with TableInfo<$HabitsTable, Habit> {
         ),
       );
     }
-    if (data.containsKey('google_user_id')) {
+    if (data.containsKey('google_sub')) {
       context.handle(
-        _googleUserIdMeta,
-        googleUserId.isAcceptableOrUnknown(
-          data['google_user_id']!,
-          _googleUserIdMeta,
-        ),
+        _googleSubMeta,
+        googleSub.isAcceptableOrUnknown(data['google_sub']!, _googleSubMeta),
       );
     }
     if (data.containsKey('created_at')) {
@@ -141,9 +138,9 @@ class $HabitsTable extends Habits with TableInfo<$HabitsTable, Habit> {
         DriftSqlType.int,
         data['${effectivePrefix}current_version'],
       )!,
-      googleUserId: attachedDatabase.typeMapping.read(
+      googleSub: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
-        data['${effectivePrefix}google_user_id'],
+        data['${effectivePrefix}google_sub'],
       ),
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
@@ -165,13 +162,13 @@ class $HabitsTable extends Habits with TableInfo<$HabitsTable, Habit> {
 class Habit extends DataClass implements Insertable<Habit> {
   final int id;
   final int currentVersion;
-  final String? googleUserId;
+  final String? googleSub;
   final DateTime createdAt;
   final bool isDeleted;
   const Habit({
     required this.id,
     required this.currentVersion,
-    this.googleUserId,
+    this.googleSub,
     required this.createdAt,
     required this.isDeleted,
   });
@@ -180,8 +177,8 @@ class Habit extends DataClass implements Insertable<Habit> {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['current_version'] = Variable<int>(currentVersion);
-    if (!nullToAbsent || googleUserId != null) {
-      map['google_user_id'] = Variable<String>(googleUserId);
+    if (!nullToAbsent || googleSub != null) {
+      map['google_sub'] = Variable<String>(googleSub);
     }
     map['created_at'] = Variable<DateTime>(createdAt);
     map['is_deleted'] = Variable<bool>(isDeleted);
@@ -192,9 +189,9 @@ class Habit extends DataClass implements Insertable<Habit> {
     return HabitsCompanion(
       id: Value(id),
       currentVersion: Value(currentVersion),
-      googleUserId: googleUserId == null && nullToAbsent
+      googleSub: googleSub == null && nullToAbsent
           ? const Value.absent()
-          : Value(googleUserId),
+          : Value(googleSub),
       createdAt: Value(createdAt),
       isDeleted: Value(isDeleted),
     );
@@ -208,7 +205,7 @@ class Habit extends DataClass implements Insertable<Habit> {
     return Habit(
       id: serializer.fromJson<int>(json['id']),
       currentVersion: serializer.fromJson<int>(json['currentVersion']),
-      googleUserId: serializer.fromJson<String?>(json['googleUserId']),
+      googleSub: serializer.fromJson<String?>(json['googleSub']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       isDeleted: serializer.fromJson<bool>(json['isDeleted']),
     );
@@ -219,7 +216,7 @@ class Habit extends DataClass implements Insertable<Habit> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'currentVersion': serializer.toJson<int>(currentVersion),
-      'googleUserId': serializer.toJson<String?>(googleUserId),
+      'googleSub': serializer.toJson<String?>(googleSub),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'isDeleted': serializer.toJson<bool>(isDeleted),
     };
@@ -228,13 +225,13 @@ class Habit extends DataClass implements Insertable<Habit> {
   Habit copyWith({
     int? id,
     int? currentVersion,
-    Value<String?> googleUserId = const Value.absent(),
+    Value<String?> googleSub = const Value.absent(),
     DateTime? createdAt,
     bool? isDeleted,
   }) => Habit(
     id: id ?? this.id,
     currentVersion: currentVersion ?? this.currentVersion,
-    googleUserId: googleUserId.present ? googleUserId.value : this.googleUserId,
+    googleSub: googleSub.present ? googleSub.value : this.googleSub,
     createdAt: createdAt ?? this.createdAt,
     isDeleted: isDeleted ?? this.isDeleted,
   );
@@ -244,9 +241,7 @@ class Habit extends DataClass implements Insertable<Habit> {
       currentVersion: data.currentVersion.present
           ? data.currentVersion.value
           : this.currentVersion,
-      googleUserId: data.googleUserId.present
-          ? data.googleUserId.value
-          : this.googleUserId,
+      googleSub: data.googleSub.present ? data.googleSub.value : this.googleSub,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       isDeleted: data.isDeleted.present ? data.isDeleted.value : this.isDeleted,
     );
@@ -257,7 +252,7 @@ class Habit extends DataClass implements Insertable<Habit> {
     return (StringBuffer('Habit(')
           ..write('id: $id, ')
           ..write('currentVersion: $currentVersion, ')
-          ..write('googleUserId: $googleUserId, ')
+          ..write('googleSub: $googleSub, ')
           ..write('createdAt: $createdAt, ')
           ..write('isDeleted: $isDeleted')
           ..write(')'))
@@ -266,14 +261,14 @@ class Habit extends DataClass implements Insertable<Habit> {
 
   @override
   int get hashCode =>
-      Object.hash(id, currentVersion, googleUserId, createdAt, isDeleted);
+      Object.hash(id, currentVersion, googleSub, createdAt, isDeleted);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is Habit &&
           other.id == this.id &&
           other.currentVersion == this.currentVersion &&
-          other.googleUserId == this.googleUserId &&
+          other.googleSub == this.googleSub &&
           other.createdAt == this.createdAt &&
           other.isDeleted == this.isDeleted);
 }
@@ -281,34 +276,34 @@ class Habit extends DataClass implements Insertable<Habit> {
 class HabitsCompanion extends UpdateCompanion<Habit> {
   final Value<int> id;
   final Value<int> currentVersion;
-  final Value<String?> googleUserId;
+  final Value<String?> googleSub;
   final Value<DateTime> createdAt;
   final Value<bool> isDeleted;
   const HabitsCompanion({
     this.id = const Value.absent(),
     this.currentVersion = const Value.absent(),
-    this.googleUserId = const Value.absent(),
+    this.googleSub = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.isDeleted = const Value.absent(),
   });
   HabitsCompanion.insert({
     this.id = const Value.absent(),
     this.currentVersion = const Value.absent(),
-    this.googleUserId = const Value.absent(),
+    this.googleSub = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.isDeleted = const Value.absent(),
   });
   static Insertable<Habit> custom({
     Expression<int>? id,
     Expression<int>? currentVersion,
-    Expression<String>? googleUserId,
+    Expression<String>? googleSub,
     Expression<DateTime>? createdAt,
     Expression<bool>? isDeleted,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (currentVersion != null) 'current_version': currentVersion,
-      if (googleUserId != null) 'google_user_id': googleUserId,
+      if (googleSub != null) 'google_sub': googleSub,
       if (createdAt != null) 'created_at': createdAt,
       if (isDeleted != null) 'is_deleted': isDeleted,
     });
@@ -317,14 +312,14 @@ class HabitsCompanion extends UpdateCompanion<Habit> {
   HabitsCompanion copyWith({
     Value<int>? id,
     Value<int>? currentVersion,
-    Value<String?>? googleUserId,
+    Value<String?>? googleSub,
     Value<DateTime>? createdAt,
     Value<bool>? isDeleted,
   }) {
     return HabitsCompanion(
       id: id ?? this.id,
       currentVersion: currentVersion ?? this.currentVersion,
-      googleUserId: googleUserId ?? this.googleUserId,
+      googleSub: googleSub ?? this.googleSub,
       createdAt: createdAt ?? this.createdAt,
       isDeleted: isDeleted ?? this.isDeleted,
     );
@@ -339,8 +334,8 @@ class HabitsCompanion extends UpdateCompanion<Habit> {
     if (currentVersion.present) {
       map['current_version'] = Variable<int>(currentVersion.value);
     }
-    if (googleUserId.present) {
-      map['google_user_id'] = Variable<String>(googleUserId.value);
+    if (googleSub.present) {
+      map['google_sub'] = Variable<String>(googleSub.value);
     }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
@@ -356,7 +351,7 @@ class HabitsCompanion extends UpdateCompanion<Habit> {
     return (StringBuffer('HabitsCompanion(')
           ..write('id: $id, ')
           ..write('currentVersion: $currentVersion, ')
-          ..write('googleUserId: $googleUserId, ')
+          ..write('googleSub: $googleSub, ')
           ..write('createdAt: $createdAt, ')
           ..write('isDeleted: $isDeleted')
           ..write(')'))
@@ -2084,7 +2079,7 @@ typedef $$HabitsTableCreateCompanionBuilder =
     HabitsCompanion Function({
       Value<int> id,
       Value<int> currentVersion,
-      Value<String?> googleUserId,
+      Value<String?> googleSub,
       Value<DateTime> createdAt,
       Value<bool> isDeleted,
     });
@@ -2092,7 +2087,7 @@ typedef $$HabitsTableUpdateCompanionBuilder =
     HabitsCompanion Function({
       Value<int> id,
       Value<int> currentVersion,
-      Value<String?> googleUserId,
+      Value<String?> googleSub,
       Value<DateTime> createdAt,
       Value<bool> isDeleted,
     });
@@ -2156,8 +2151,8 @@ class $$HabitsTableFilterComposer extends Composer<_$Database, $HabitsTable> {
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get googleUserId => $composableBuilder(
-    column: $table.googleUserId,
+  ColumnFilters<String> get googleSub => $composableBuilder(
+    column: $table.googleSub,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -2240,8 +2235,8 @@ class $$HabitsTableOrderingComposer extends Composer<_$Database, $HabitsTable> {
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get googleUserId => $composableBuilder(
-    column: $table.googleUserId,
+  ColumnOrderings<String> get googleSub => $composableBuilder(
+    column: $table.googleSub,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -2273,10 +2268,8 @@ class $$HabitsTableAnnotationComposer
     builder: (column) => column,
   );
 
-  GeneratedColumn<String> get googleUserId => $composableBuilder(
-    column: $table.googleUserId,
-    builder: (column) => column,
-  );
+  GeneratedColumn<String> get googleSub =>
+      $composableBuilder(column: $table.googleSub, builder: (column) => column);
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
@@ -2365,13 +2358,13 @@ class $$HabitsTableTableManager
               ({
                 Value<int> id = const Value.absent(),
                 Value<int> currentVersion = const Value.absent(),
-                Value<String?> googleUserId = const Value.absent(),
+                Value<String?> googleSub = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<bool> isDeleted = const Value.absent(),
               }) => HabitsCompanion(
                 id: id,
                 currentVersion: currentVersion,
-                googleUserId: googleUserId,
+                googleSub: googleSub,
                 createdAt: createdAt,
                 isDeleted: isDeleted,
               ),
@@ -2379,13 +2372,13 @@ class $$HabitsTableTableManager
               ({
                 Value<int> id = const Value.absent(),
                 Value<int> currentVersion = const Value.absent(),
-                Value<String?> googleUserId = const Value.absent(),
+                Value<String?> googleSub = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<bool> isDeleted = const Value.absent(),
               }) => HabitsCompanion.insert(
                 id: id,
                 currentVersion: currentVersion,
-                googleUserId: googleUserId,
+                googleSub: googleSub,
                 createdAt: createdAt,
                 isDeleted: isDeleted,
               ),
