@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:habit_tracker/core/entities/days_of_week.dart';
 
 class HabitData {
   int? id;
@@ -11,7 +12,7 @@ class HabitData {
   /// HH:mm
   TimeOfDay reminderTime;
 
-  // DaysOfWeek? repeatOnDaysOfWeek;
+  DaysOfWeek? repeatOnDaysOfWeek;
 
   /// NOTE: Max value = 7
   int? repeatEveryNDays;
@@ -29,7 +30,7 @@ class HabitData {
     required this.startDatetime,
     required this.endDatetime,
     required this.reminderTime,
-    // this.repeatOnDaysOfWeek,
+    this.repeatOnDaysOfWeek,
     this.repeatEveryNDays,
     this.targetUnit,
     this.targetQuantity,
