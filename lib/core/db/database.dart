@@ -1,11 +1,13 @@
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
+import 'package:habit_tracker/core/entities/days_of_week.dart';
 import 'package:habit_tracker/core/entities/habit_data.dart';
 import 'package:habit_tracker/core/db/idatabase.dart';
 import 'package:habit_tracker/core/db/tables/categories.dart';
 import 'package:habit_tracker/core/db/tables/habits.dart';
 import 'package:habit_tracker/core/db/tables/habits_details.dart';
 import 'package:habit_tracker/core/db/tables/habits_log.dart';
+import 'package:habit_tracker/core/extensions/string_extensions.dart';
 import 'package:path_provider/path_provider.dart';
 
 part 'database.g.dart';
@@ -52,7 +54,7 @@ class Database extends _$Database implements Idatabase {
     // throws exception if something is wrong with the data
     _validateHabitData(habitData);
 
-    // gotta make sure the id isn't assigned manually
+    // gotta make sure id & currentVersion aren't assigned manually
     if (habitData.id != Value.absent() ||
         habitData.currentVersion != Value.absent()) {
       throw Exception(
@@ -82,13 +84,13 @@ class Database extends _$Database implements Idatabase {
             version: Value(1),
             editDatetime: Value(DateTime.now()),
             name: habitData.name.toString(),
-            description: habitData.desc,
+            description: habitData.desc.value,
             categoryId: habitData.categoryId as int,
             startDatetime: habitData.startDatetime.value,
             endDatetime: habitData.endDatetime,
             reminderTime: Value(reminderTime),
             repeatOnDaysOfWeek: Value(
-              habitData.repeatOnDaysOfWeek.value?.toDBFormat(),
+              DaysOfWeek.formatForDB(habitData.repeatOnDaysOfWeek.value),
             ),
             repeatEveryNDays: habitData.repeatEveryNDays,
             targetUnit: habitData.targetUnit,
@@ -134,14 +136,14 @@ class Database extends _$Database implements Idatabase {
             version: newVersionNum,
             editDatetime: Value(DateTime.now()),
             name: newDetails.name.value,
-            description: newDetails.desc,
+            description: newDetails.desc.value,
             categoryId: newDetails.categoryId.value,
             startDatetime: newDetails.startDatetime.value,
             endDatetime: newDetails.endDatetime,
             reminderTime: Value(reminderTime),
             repeatEveryNDays: newDetails.repeatEveryNDays,
             repeatOnDaysOfWeek: Value(
-              newDetails.repeatOnDaysOfWeek.value?.toDBFormat(),
+              DaysOfWeek.formatForDB(newDetails.repeatOnDaysOfWeek.value),
             ),
             targetUnit: newDetails.targetUnit,
             targetQuantity: newDetails.targetQuantity,
@@ -159,8 +161,69 @@ class Database extends _$Database implements Idatabase {
   }
 
   @override
-  Habit? queryHabit() {
-    return null;
+  Future<List<HabitData>?> getTodayHabits() async {
+    // query habits table
+    final List<Habit> habitsRows = await (select(
+      habits,
+      // only querying undeleted habits
+    )..where((tbl) => tbl.isDeleted.equals(false))).get();
+
+    // extracting id column for habits_details query
+    final List<int> habitIds = habitsRows.map((row) => row.id).toList();
+
+    // query habits_details table
+    final List<HabitsDetail> habitsDetailsRows =
+        await (select(habitsDetails)
+              // querying details for only undeleted habits
+              ..where((tbl) => tbl.habitId.isIn(habitIds)))
+            .get();
+
+    final latestDetailsMap = <int, HabitsDetail>{};
+
+    // grouping latest details only into latestDetailsMap.
+    for (final detail in habitsDetailsRows) {
+      final existing = latestDetailsMap[detail.habitId];
+      if (existing == null || detail.version > existing.version) {
+        latestDetailsMap[detail.habitId] = detail;
+      }
+    }
+
+    // replacing with only the latest details
+    habitsDetailsRows.clear();
+    habitsDetailsRows.addAll(latestDetailsMap.values.toList());
+
+    // mapping to HabitData entities for output
+    final List<HabitData> out = [];
+
+    for (int i = 0; i < habitsDetailsRows.length; i++) {
+      // parsing to valid types
+      final repeatOnDaysOfWeek = DaysOfWeek.parseFromDB(
+        habitsDetailsRows[i].repeatOnDaysOfWeek,
+      );
+      final reminderTime = habitsDetailsRows[i].reminderTime!.toTimeOfDay();
+
+      // Query process
+      out.add(
+        HabitData(
+          id: Value(habitsDetailsRows[i].habitId),
+          currentVersion: Value(habitsDetailsRows[i].version),
+          name: Value(habitsDetailsRows[i].name),
+          desc: Value(habitsDetailsRows[i].description),
+          categoryId: Value(habitsDetailsRows[i].categoryId),
+          startDatetime: Value(habitsDetailsRows[i].startDatetime),
+          endDatetime: Value(habitsDetailsRows[i].endDatetime),
+          reminderTime: Value(reminderTime),
+          repeatOnDaysOfWeek: Value(repeatOnDaysOfWeek),
+          repeatEveryNDays: Value(habitsDetailsRows[i].repeatEveryNDays),
+          targetUnit: Value(habitsDetailsRows[i].targetUnit),
+          targetQuantity: Value(habitsDetailsRows[i].targetQuantity),
+          goalCompletionRate: Value(habitsDetailsRows[i].goalCompletionRate),
+          goalDeadline: Value(habitsDetailsRows[i].goalDeadline),
+          isArchived: Value(habitsDetailsRows[i].isArchived),
+        ),
+      );
+    }
+    return out.isEmpty ? null : out;
   }
 
   @override

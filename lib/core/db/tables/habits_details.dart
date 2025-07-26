@@ -8,7 +8,7 @@ class HabitsDetails extends Table {
       version = integer().withDefault(const Constant(1))(),
       editDatetime = dateTime().withDefault(currentDateAndTime)(),
       name = text()(),
-      description = text().nullable()(),
+      description = text()(),
       categoryId = integer().references(Categories, #id)(),
       startDatetime = dateTime()(),
       endDatetime = dateTime().nullable()(),

@@ -743,9 +743,9 @@ class $HabitsDetailsTable extends HabitsDetails
   late final GeneratedColumn<String> description = GeneratedColumn<String>(
     'description',
     aliasedName,
-    true,
+    false,
     type: DriftSqlType.string,
-    requiredDuringInsert: false,
+    requiredDuringInsert: true,
   );
   static const VerificationMeta _categoryIdMeta = const VerificationMeta(
     'categoryId',
@@ -950,6 +950,8 @@ class $HabitsDetailsTable extends HabitsDetails
           _descriptionMeta,
         ),
       );
+    } else if (isInserting) {
+      context.missing(_descriptionMeta);
     }
     if (data.containsKey('category_id')) {
       context.handle(
@@ -1081,7 +1083,7 @@ class $HabitsDetailsTable extends HabitsDetails
       description: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}description'],
-      ),
+      )!,
       categoryId: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}category_id'],
@@ -1141,7 +1143,7 @@ class HabitsDetail extends DataClass implements Insertable<HabitsDetail> {
   final int version;
   final DateTime editDatetime;
   final String name;
-  final String? description;
+  final String description;
   final int categoryId;
   final DateTime startDatetime;
   final DateTime? endDatetime;
@@ -1159,7 +1161,7 @@ class HabitsDetail extends DataClass implements Insertable<HabitsDetail> {
     required this.version,
     required this.editDatetime,
     required this.name,
-    this.description,
+    required this.description,
     required this.categoryId,
     required this.startDatetime,
     this.endDatetime,
@@ -1180,9 +1182,7 @@ class HabitsDetail extends DataClass implements Insertable<HabitsDetail> {
     map['version'] = Variable<int>(version);
     map['edit_datetime'] = Variable<DateTime>(editDatetime);
     map['name'] = Variable<String>(name);
-    if (!nullToAbsent || description != null) {
-      map['description'] = Variable<String>(description);
-    }
+    map['description'] = Variable<String>(description);
     map['category_id'] = Variable<int>(categoryId);
     map['start_datetime'] = Variable<DateTime>(startDatetime);
     if (!nullToAbsent || endDatetime != null) {
@@ -1220,9 +1220,7 @@ class HabitsDetail extends DataClass implements Insertable<HabitsDetail> {
       version: Value(version),
       editDatetime: Value(editDatetime),
       name: Value(name),
-      description: description == null && nullToAbsent
-          ? const Value.absent()
-          : Value(description),
+      description: Value(description),
       categoryId: Value(categoryId),
       startDatetime: Value(startDatetime),
       endDatetime: endDatetime == null && nullToAbsent
@@ -1264,7 +1262,7 @@ class HabitsDetail extends DataClass implements Insertable<HabitsDetail> {
       version: serializer.fromJson<int>(json['version']),
       editDatetime: serializer.fromJson<DateTime>(json['editDatetime']),
       name: serializer.fromJson<String>(json['name']),
-      description: serializer.fromJson<String?>(json['description']),
+      description: serializer.fromJson<String>(json['description']),
       categoryId: serializer.fromJson<int>(json['categoryId']),
       startDatetime: serializer.fromJson<DateTime>(json['startDatetime']),
       endDatetime: serializer.fromJson<DateTime?>(json['endDatetime']),
@@ -1289,7 +1287,7 @@ class HabitsDetail extends DataClass implements Insertable<HabitsDetail> {
       'version': serializer.toJson<int>(version),
       'editDatetime': serializer.toJson<DateTime>(editDatetime),
       'name': serializer.toJson<String>(name),
-      'description': serializer.toJson<String?>(description),
+      'description': serializer.toJson<String>(description),
       'categoryId': serializer.toJson<int>(categoryId),
       'startDatetime': serializer.toJson<DateTime>(startDatetime),
       'endDatetime': serializer.toJson<DateTime?>(endDatetime),
@@ -1310,7 +1308,7 @@ class HabitsDetail extends DataClass implements Insertable<HabitsDetail> {
     int? version,
     DateTime? editDatetime,
     String? name,
-    Value<String?> description = const Value.absent(),
+    String? description,
     int? categoryId,
     DateTime? startDatetime,
     Value<DateTime?> endDatetime = const Value.absent(),
@@ -1328,7 +1326,7 @@ class HabitsDetail extends DataClass implements Insertable<HabitsDetail> {
     version: version ?? this.version,
     editDatetime: editDatetime ?? this.editDatetime,
     name: name ?? this.name,
-    description: description.present ? description.value : this.description,
+    description: description ?? this.description,
     categoryId: categoryId ?? this.categoryId,
     startDatetime: startDatetime ?? this.startDatetime,
     endDatetime: endDatetime.present ? endDatetime.value : this.endDatetime,
@@ -1470,7 +1468,7 @@ class HabitsDetailsCompanion extends UpdateCompanion<HabitsDetail> {
   final Value<int> version;
   final Value<DateTime> editDatetime;
   final Value<String> name;
-  final Value<String?> description;
+  final Value<String> description;
   final Value<int> categoryId;
   final Value<DateTime> startDatetime;
   final Value<DateTime?> endDatetime;
@@ -1507,7 +1505,7 @@ class HabitsDetailsCompanion extends UpdateCompanion<HabitsDetail> {
     this.version = const Value.absent(),
     this.editDatetime = const Value.absent(),
     required String name,
-    this.description = const Value.absent(),
+    required String description,
     required int categoryId,
     required DateTime startDatetime,
     this.endDatetime = const Value.absent(),
@@ -1521,6 +1519,7 @@ class HabitsDetailsCompanion extends UpdateCompanion<HabitsDetail> {
     this.isArchived = const Value.absent(),
   }) : habitId = Value(habitId),
        name = Value(name),
+       description = Value(description),
        categoryId = Value(categoryId),
        startDatetime = Value(startDatetime);
   static Insertable<HabitsDetail> custom({
@@ -1571,7 +1570,7 @@ class HabitsDetailsCompanion extends UpdateCompanion<HabitsDetail> {
     Value<int>? version,
     Value<DateTime>? editDatetime,
     Value<String>? name,
-    Value<String?>? description,
+    Value<String>? description,
     Value<int>? categoryId,
     Value<DateTime>? startDatetime,
     Value<DateTime?>? endDatetime,
@@ -2757,7 +2756,7 @@ typedef $$HabitsDetailsTableCreateCompanionBuilder =
       Value<int> version,
       Value<DateTime> editDatetime,
       required String name,
-      Value<String?> description,
+      required String description,
       required int categoryId,
       required DateTime startDatetime,
       Value<DateTime?> endDatetime,
@@ -2777,7 +2776,7 @@ typedef $$HabitsDetailsTableUpdateCompanionBuilder =
       Value<int> version,
       Value<DateTime> editDatetime,
       Value<String> name,
-      Value<String?> description,
+      Value<String> description,
       Value<int> categoryId,
       Value<DateTime> startDatetime,
       Value<DateTime?> endDatetime,
@@ -3333,7 +3332,7 @@ class $$HabitsDetailsTableTableManager
                 Value<int> version = const Value.absent(),
                 Value<DateTime> editDatetime = const Value.absent(),
                 Value<String> name = const Value.absent(),
-                Value<String?> description = const Value.absent(),
+                Value<String> description = const Value.absent(),
                 Value<int> categoryId = const Value.absent(),
                 Value<DateTime> startDatetime = const Value.absent(),
                 Value<DateTime?> endDatetime = const Value.absent(),
@@ -3371,7 +3370,7 @@ class $$HabitsDetailsTableTableManager
                 Value<int> version = const Value.absent(),
                 Value<DateTime> editDatetime = const Value.absent(),
                 required String name,
-                Value<String?> description = const Value.absent(),
+                required String description,
                 required int categoryId,
                 required DateTime startDatetime,
                 Value<DateTime?> endDatetime = const Value.absent(),
