@@ -17,7 +17,14 @@ class HabitsDetails extends Table {
       repeatEveryNDays = integer().nullable()(),
       targetUnit = text().nullable()(),
       targetQuantity = real().nullable()();
-      late final Column<int> goalCompletionRate = integer().check(goalCompletionRate.isBetweenValues(50, 100)).nullable()();
-      late final goalDeadline = dateTime().nullable()(),
+  late final Column<int> goalCompletionRate = integer()
+      .check(goalCompletionRate.isBetweenValues(50, 100))
+      .nullable()();
+  late final goalDeadline = dateTime().nullable()(),
       isArchived = boolean().withDefault(const Constant(false))();
+
+  @override
+  List<Set<Column>> get uniqueKeys => [
+    {habitId, version},
+  ];
 }
