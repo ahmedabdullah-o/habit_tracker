@@ -7,6 +7,7 @@ import 'package:habit_tracker/core/db/tables/categories.dart';
 import 'package:habit_tracker/core/db/tables/habits.dart';
 import 'package:habit_tracker/core/db/tables/habits_details.dart';
 import 'package:habit_tracker/core/db/tables/habits_log.dart';
+import 'package:habit_tracker/core/extensions/habit_data_extensions.dart';
 import 'package:habit_tracker/core/extensions/string_extensions.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -16,7 +17,6 @@ part 'database.g.dart';
 class Database extends _$Database implements Idatabase {
   Database([QueryExecutor? executor]) : super(executor ?? _openConnection());
 
-  /// `checkId` whether to check if the id is absent or not, which is required when inserting rows.
   void _validateHabitData(HabitData habitData) async {
     // Check if both repeat options don't equal null
     // or have a value at the same time.
@@ -161,7 +161,7 @@ class Database extends _$Database implements Idatabase {
   }
 
   @override
-  Future<List<HabitData>?> getTodayHabits() async {
+  Future<List<HabitData>?> getAllHabits() async {
     // query habits table
     final List<Habit> habitsRows = await (select(
       habits,
@@ -202,7 +202,7 @@ class Database extends _$Database implements Idatabase {
       );
       final reminderTime = habitsDetailsRows[i].reminderTime!.toTimeOfDay();
 
-      // Query process
+      // adding to the output list
       out.add(
         HabitData(
           id: Value(habitsDetailsRows[i].habitId),
@@ -222,6 +222,21 @@ class Database extends _$Database implements Idatabase {
           isArchived: Value(habitsDetailsRows[i].isArchived),
         ),
       );
+    }
+    return out.isEmpty ? null : out;
+  }
+
+  @override
+  Future<List<HabitData>?> getTodayHabits() async {
+    final habits = await getAllHabits();
+    if (habits == null) {
+      return null;
+    }
+    List<HabitData> out = [];
+    for (HabitData habit in habits) {
+      if (habit.isDueToday()) {
+        out.add(habit);
+      }
     }
     return out.isEmpty ? null : out;
   }
