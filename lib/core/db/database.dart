@@ -17,6 +17,9 @@ part 'database.g.dart';
 class Database extends _$Database implements Idatabase {
   Database([QueryExecutor? executor]) : super(executor ?? _openConnection());
 
+  List<HabitData>? _habitsCache;
+  List<HabitData>? _habitsTodayCache;
+
   void _validateHabitData(HabitData habitData) async {
     // Check if both repeat options don't equal null
     // or have a value at the same time.
@@ -100,6 +103,17 @@ class Database extends _$Database implements Idatabase {
             isArchived: habitData.isArchived,
           ),
         );
+        if (_habitsCache != null) {
+          for (int i = 0; i < _habitsCache!.length; i++) {
+            if (_habitsCache![i].reminderTime.value.isAfter(
+              habitData.reminderTime.value,
+            )) {
+              _habitsCache!.insert(i, habitData);
+            }
+          }
+        } else {
+          _habitsCache = [habitData];
+        }
         return habit;
       });
     } catch (e) {
@@ -152,6 +166,12 @@ class Database extends _$Database implements Idatabase {
             isArchived: newDetails.isArchived,
           ),
         ));
+        for (HabitData habit in _habitsCache!) {
+          if (habit.id.value == newDetails.id.value) {
+            habit = newDetails;
+            break;
+          }
+        }
         return newVersionNum.value;
       });
     } catch (e) {
@@ -162,22 +182,37 @@ class Database extends _$Database implements Idatabase {
 
   @override
   Future<List<HabitData>?> getAllHabits() async {
-    // query habits table
-    final List<Habit> habitsRows = await (select(
-      habits,
-      // only querying undeleted habits
-    )..where((tbl) => tbl.isDeleted.equals(false))).get();
+    // check if there's an available cache to return
+    if (_habitsCache != null) {
+      return _habitsCache;
+    }
 
-    // extracting id column for habits_details query
-    final List<int> habitIds = habitsRows.map((row) => row.id).toList();
+    List<Habit> habitsRows = [];
+    List<int> habitIds = [];
+    List<HabitsDetail> habitsDetailsRows = [];
 
-    // query habits_details table
-    final List<HabitsDetail> habitsDetailsRows =
-        await (select(habitsDetails)
-              // querying details for only undeleted habits
-              ..where((tbl) => tbl.habitId.isIn(habitIds)))
-            .get();
+    try {
+      // query habits table
+      habitsRows = await (select(
+        habits,
+        // only querying undeleted habits
+      )..where((tbl) => tbl.isDeleted.equals(false))..orderBy([
+        // order by creation time
+        (u) => OrderingTerm(expression: u.createdAt)
+      ])).get();
 
+      // extracting id column for habits_details query
+      habitIds = habitsRows.map((row) => row.id).toList();
+
+      // query habits_details table
+      habitsDetailsRows =
+          await (select(habitsDetails)
+                // querying details for only undeleted habits
+                ..where((tbl) => tbl.habitId.isIn(habitIds)))
+              .get();
+    } catch (e) {
+      throw Exception(e.toString());
+    }
     final latestDetailsMap = <int, HabitsDetail>{};
 
     // grouping latest details only into latestDetailsMap.
@@ -223,11 +258,17 @@ class Database extends _$Database implements Idatabase {
         ),
       );
     }
+    // update cache
+    _habitsCache = out.isEmpty ? null : out;
+    // return the array
     return out.isEmpty ? null : out;
   }
 
   @override
   Future<List<HabitData>?> getTodayHabits() async {
+    if (_habitsTodayCache != null) {
+      return _habitsTodayCache;
+    }
     final habits = await getAllHabits();
     if (habits == null) {
       return null;
@@ -238,6 +279,7 @@ class Database extends _$Database implements Idatabase {
         out.add(habit);
       }
     }
+    _habitsTodayCache = out;
     return out.isEmpty ? null : out;
   }
 
