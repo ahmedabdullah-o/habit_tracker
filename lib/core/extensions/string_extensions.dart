@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart' show TimeOfDay;
 
 extension StringExtensions on String {
-  bool _validateStringFormat() {
+  bool _validateTimeOfDay() {
     final codeunit = codeUnits;
 
     if (codeunit.length != 5 || codeunit[2] != 58) {
@@ -18,7 +18,7 @@ extension StringExtensions on String {
   }
 
   TimeOfDay toTimeOfDay() {
-    if (!_validateStringFormat()) {
+    if (!_validateTimeOfDay()) {
       throw Exception("invalid format. Try formatting the string as: `HH:mm`");
     }
 

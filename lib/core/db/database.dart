@@ -1,5 +1,8 @@
+import 'dart:ui' show Color;
+
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
+import 'package:habit_tracker/core/entities/category_data.dart';
 import 'package:habit_tracker/core/entities/days_of_week.dart';
 import 'package:habit_tracker/core/entities/habit_data.dart';
 import 'package:habit_tracker/core/db/idatabase.dart';
@@ -193,13 +196,17 @@ class Database extends _$Database implements Idatabase {
 
     try {
       // query habits table
-      habitsRows = await (select(
-        habits,
-        // only querying undeleted habits
-      )..where((tbl) => tbl.isDeleted.equals(false))..orderBy([
-        // order by creation time
-        (u) => OrderingTerm(expression: u.createdAt)
-      ])).get();
+      habitsRows =
+          await (select(
+                  habits,
+                  // only querying undeleted habits
+                )
+                ..where((tbl) => tbl.isDeleted.equals(false))
+                ..orderBy([
+                  // order by creation time
+                  (u) => OrderingTerm(expression: u.createdAt),
+                ]))
+              .get();
 
       // extracting id column for habits_details query
       habitIds = habitsRows.map((row) => row.id).toList();
@@ -281,6 +288,40 @@ class Database extends _$Database implements Idatabase {
     }
     _habitsTodayCache = out;
     return out.isEmpty ? null : out;
+  }
+
+  @override
+  Future<int?> insertCategory(CategoryData categoryData) async {
+    if (categoryData.id != Value.absent()) {
+      throw Exception(
+        'the property CategoryData.id should be unassigned in case of insertion',
+      );
+    }
+    try {
+      int? insertId;
+      final duplicate =
+          await (select(categories)
+                ..where(
+                  (u) => u.color.equals(categoryData.color.value.toARGB32()),
+                )
+                ..where(
+                  (u) =>
+                      u.iconCodePoint.equals(categoryData.iconCodePoint.value),
+                ))
+              .getSingleOrNull();
+      if (duplicate == null) {
+        insertId = await into(categories).insert(
+          CategoriesCompanion.insert(
+            name: categoryData.name.value,
+            color: categoryData.color.value.toARGB32(),
+            iconCodePoint: categoryData.iconCodePoint.value,
+          ),
+        );
+      }
+      return insertId;
+    } catch (e) {
+      throw Exception(e.toString());
+    }
   }
 
   @override

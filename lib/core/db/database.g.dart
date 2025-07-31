@@ -391,19 +391,13 @@ class $CategoriesTable extends Categories
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _colorHexMeta = const VerificationMeta(
-    'colorHex',
-  );
+  static const VerificationMeta _colorMeta = const VerificationMeta('color');
   @override
-  late final GeneratedColumn<String> colorHex = GeneratedColumn<String>(
-    'color_hex',
+  late final GeneratedColumn<int> color = GeneratedColumn<int>(
+    'color',
     aliasedName,
     false,
-    additionalChecks: GeneratedColumn.checkTextLength(
-      minTextLength: 6,
-      maxTextLength: 6,
-    ),
-    type: DriftSqlType.string,
+    type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
   static const VerificationMeta _iconCodePointMeta = const VerificationMeta(
@@ -418,7 +412,7 @@ class $CategoriesTable extends Categories
     requiredDuringInsert: true,
   );
   @override
-  List<GeneratedColumn> get $columns => [id, name, colorHex, iconCodePoint];
+  List<GeneratedColumn> get $columns => [id, name, color, iconCodePoint];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -442,13 +436,13 @@ class $CategoriesTable extends Categories
     } else if (isInserting) {
       context.missing(_nameMeta);
     }
-    if (data.containsKey('color_hex')) {
+    if (data.containsKey('color')) {
       context.handle(
-        _colorHexMeta,
-        colorHex.isAcceptableOrUnknown(data['color_hex']!, _colorHexMeta),
+        _colorMeta,
+        color.isAcceptableOrUnknown(data['color']!, _colorMeta),
       );
     } else if (isInserting) {
-      context.missing(_colorHexMeta);
+      context.missing(_colorMeta);
     }
     if (data.containsKey('icon_code_point')) {
       context.handle(
@@ -478,9 +472,9 @@ class $CategoriesTable extends Categories
         DriftSqlType.string,
         data['${effectivePrefix}name'],
       )!,
-      colorHex: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}color_hex'],
+      color: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}color'],
       )!,
       iconCodePoint: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
@@ -498,12 +492,12 @@ class $CategoriesTable extends Categories
 class Category extends DataClass implements Insertable<Category> {
   final int id;
   final String name;
-  final String colorHex;
+  final int color;
   final int iconCodePoint;
   const Category({
     required this.id,
     required this.name,
-    required this.colorHex,
+    required this.color,
     required this.iconCodePoint,
   });
   @override
@@ -511,7 +505,7 @@ class Category extends DataClass implements Insertable<Category> {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['name'] = Variable<String>(name);
-    map['color_hex'] = Variable<String>(colorHex);
+    map['color'] = Variable<int>(color);
     map['icon_code_point'] = Variable<int>(iconCodePoint);
     return map;
   }
@@ -520,7 +514,7 @@ class Category extends DataClass implements Insertable<Category> {
     return CategoriesCompanion(
       id: Value(id),
       name: Value(name),
-      colorHex: Value(colorHex),
+      color: Value(color),
       iconCodePoint: Value(iconCodePoint),
     );
   }
@@ -533,7 +527,7 @@ class Category extends DataClass implements Insertable<Category> {
     return Category(
       id: serializer.fromJson<int>(json['id']),
       name: serializer.fromJson<String>(json['name']),
-      colorHex: serializer.fromJson<String>(json['colorHex']),
+      color: serializer.fromJson<int>(json['color']),
       iconCodePoint: serializer.fromJson<int>(json['iconCodePoint']),
     );
   }
@@ -543,27 +537,23 @@ class Category extends DataClass implements Insertable<Category> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'name': serializer.toJson<String>(name),
-      'colorHex': serializer.toJson<String>(colorHex),
+      'color': serializer.toJson<int>(color),
       'iconCodePoint': serializer.toJson<int>(iconCodePoint),
     };
   }
 
-  Category copyWith({
-    int? id,
-    String? name,
-    String? colorHex,
-    int? iconCodePoint,
-  }) => Category(
-    id: id ?? this.id,
-    name: name ?? this.name,
-    colorHex: colorHex ?? this.colorHex,
-    iconCodePoint: iconCodePoint ?? this.iconCodePoint,
-  );
+  Category copyWith({int? id, String? name, int? color, int? iconCodePoint}) =>
+      Category(
+        id: id ?? this.id,
+        name: name ?? this.name,
+        color: color ?? this.color,
+        iconCodePoint: iconCodePoint ?? this.iconCodePoint,
+      );
   Category copyWithCompanion(CategoriesCompanion data) {
     return Category(
       id: data.id.present ? data.id.value : this.id,
       name: data.name.present ? data.name.value : this.name,
-      colorHex: data.colorHex.present ? data.colorHex.value : this.colorHex,
+      color: data.color.present ? data.color.value : this.color,
       iconCodePoint: data.iconCodePoint.present
           ? data.iconCodePoint.value
           : this.iconCodePoint,
@@ -575,53 +565,53 @@ class Category extends DataClass implements Insertable<Category> {
     return (StringBuffer('Category(')
           ..write('id: $id, ')
           ..write('name: $name, ')
-          ..write('colorHex: $colorHex, ')
+          ..write('color: $color, ')
           ..write('iconCodePoint: $iconCodePoint')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, name, colorHex, iconCodePoint);
+  int get hashCode => Object.hash(id, name, color, iconCodePoint);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is Category &&
           other.id == this.id &&
           other.name == this.name &&
-          other.colorHex == this.colorHex &&
+          other.color == this.color &&
           other.iconCodePoint == this.iconCodePoint);
 }
 
 class CategoriesCompanion extends UpdateCompanion<Category> {
   final Value<int> id;
   final Value<String> name;
-  final Value<String> colorHex;
+  final Value<int> color;
   final Value<int> iconCodePoint;
   const CategoriesCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
-    this.colorHex = const Value.absent(),
+    this.color = const Value.absent(),
     this.iconCodePoint = const Value.absent(),
   });
   CategoriesCompanion.insert({
     this.id = const Value.absent(),
     required String name,
-    required String colorHex,
+    required int color,
     required int iconCodePoint,
   }) : name = Value(name),
-       colorHex = Value(colorHex),
+       color = Value(color),
        iconCodePoint = Value(iconCodePoint);
   static Insertable<Category> custom({
     Expression<int>? id,
     Expression<String>? name,
-    Expression<String>? colorHex,
+    Expression<int>? color,
     Expression<int>? iconCodePoint,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (name != null) 'name': name,
-      if (colorHex != null) 'color_hex': colorHex,
+      if (color != null) 'color': color,
       if (iconCodePoint != null) 'icon_code_point': iconCodePoint,
     });
   }
@@ -629,13 +619,13 @@ class CategoriesCompanion extends UpdateCompanion<Category> {
   CategoriesCompanion copyWith({
     Value<int>? id,
     Value<String>? name,
-    Value<String>? colorHex,
+    Value<int>? color,
     Value<int>? iconCodePoint,
   }) {
     return CategoriesCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
-      colorHex: colorHex ?? this.colorHex,
+      color: color ?? this.color,
       iconCodePoint: iconCodePoint ?? this.iconCodePoint,
     );
   }
@@ -649,8 +639,8 @@ class CategoriesCompanion extends UpdateCompanion<Category> {
     if (name.present) {
       map['name'] = Variable<String>(name.value);
     }
-    if (colorHex.present) {
-      map['color_hex'] = Variable<String>(colorHex.value);
+    if (color.present) {
+      map['color'] = Variable<int>(color.value);
     }
     if (iconCodePoint.present) {
       map['icon_code_point'] = Variable<int>(iconCodePoint.value);
@@ -663,7 +653,7 @@ class CategoriesCompanion extends UpdateCompanion<Category> {
     return (StringBuffer('CategoriesCompanion(')
           ..write('id: $id, ')
           ..write('name: $name, ')
-          ..write('colorHex: $colorHex, ')
+          ..write('color: $color, ')
           ..write('iconCodePoint: $iconCodePoint')
           ..write(')'))
         .toString();
@@ -2470,14 +2460,14 @@ typedef $$CategoriesTableCreateCompanionBuilder =
     CategoriesCompanion Function({
       Value<int> id,
       required String name,
-      required String colorHex,
+      required int color,
       required int iconCodePoint,
     });
 typedef $$CategoriesTableUpdateCompanionBuilder =
     CategoriesCompanion Function({
       Value<int> id,
       Value<String> name,
-      Value<String> colorHex,
+      Value<int> color,
       Value<int> iconCodePoint,
     });
 
@@ -2526,8 +2516,8 @@ class $$CategoriesTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get colorHex => $composableBuilder(
-    column: $table.colorHex,
+  ColumnFilters<int> get color => $composableBuilder(
+    column: $table.color,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -2581,8 +2571,8 @@ class $$CategoriesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get colorHex => $composableBuilder(
-    column: $table.colorHex,
+  ColumnOrderings<int> get color => $composableBuilder(
+    column: $table.color,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -2607,8 +2597,8 @@ class $$CategoriesTableAnnotationComposer
   GeneratedColumn<String> get name =>
       $composableBuilder(column: $table.name, builder: (column) => column);
 
-  GeneratedColumn<String> get colorHex =>
-      $composableBuilder(column: $table.colorHex, builder: (column) => column);
+  GeneratedColumn<int> get color =>
+      $composableBuilder(column: $table.color, builder: (column) => column);
 
   GeneratedColumn<int> get iconCodePoint => $composableBuilder(
     column: $table.iconCodePoint,
@@ -2671,24 +2661,24 @@ class $$CategoriesTableTableManager
               ({
                 Value<int> id = const Value.absent(),
                 Value<String> name = const Value.absent(),
-                Value<String> colorHex = const Value.absent(),
+                Value<int> color = const Value.absent(),
                 Value<int> iconCodePoint = const Value.absent(),
               }) => CategoriesCompanion(
                 id: id,
                 name: name,
-                colorHex: colorHex,
+                color: color,
                 iconCodePoint: iconCodePoint,
               ),
           createCompanionCallback:
               ({
                 Value<int> id = const Value.absent(),
                 required String name,
-                required String colorHex,
+                required int color,
                 required int iconCodePoint,
               }) => CategoriesCompanion.insert(
                 id: id,
                 name: name,
-                colorHex: colorHex,
+                color: color,
                 iconCodePoint: iconCodePoint,
               ),
           withReferenceMapper: (p0) => p0
