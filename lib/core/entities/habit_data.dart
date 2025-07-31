@@ -30,6 +30,7 @@ class HabitData {
   Value<int?> goalCompletionRate;
   Value<DateTime?> goalDeadline;
   Value<bool> isArchived;
+  
 
   HabitData({
     this.id = const Value.absent(),

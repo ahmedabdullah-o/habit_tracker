@@ -325,6 +325,27 @@ class Database extends _$Database implements Idatabase {
   }
 
   @override
+  Future<CategoryData?> getCategory(int id) async {
+    try {
+      final category = await (select(
+        categories,
+      )..where((u) => u.id.equals(id))).get();
+      if (category.isEmpty) {
+        return null;
+      } else {
+        return CategoryData(
+          id: Value(category[0].id),
+          name: Value(category[0].name),
+          color: Value(Color(category[0].color)),
+          iconCodePoint: Value(category[0].iconCodePoint),
+        );
+      }
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  @override
   int get schemaVersion => 1;
 
   static QueryExecutor _openConnection() {

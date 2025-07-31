@@ -15,6 +15,12 @@ abstract class Idatabase {
   Future<List<HabitData>?> getTodayHabits();
 
   /// Inserts a new category into the database.
+  ///
   /// If null is returned that means a category with the exact properties already exists.
   Future<int?> insertCategory(CategoryData categoryData);
+
+  /// Returns the category with the corresponding id
+  ///
+  /// if null is returned then there is no category with the given id
+  Future<CategoryData?> getCategory(int id);
 }
