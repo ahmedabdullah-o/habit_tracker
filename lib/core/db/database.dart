@@ -311,6 +311,48 @@ class Database extends _$Database implements Idatabase {
   }
 
   @override
+  Future<int?> toggleArchiveHabit(int id) async {
+    try {
+      final exists =
+          await (select(habits)
+                ..where((u) => u.isDeleted.equals(false))
+                ..where((u) => u.id.equals(id)))
+              .getSingleOrNull();
+      if (exists == null) {
+        return null;
+      }
+      final currentVersion =
+          await (select(habitsDetails)
+                ..where((u) => u.id.equals(id))
+                ..where((u) => u.version.equals(exists.currentVersion)))
+              .getSingleOrNull();
+      if (currentVersion == null) {
+        throw Exception(
+          'Data corruption: current version of this habit doesn\'t exist',
+        );
+      }
+
+      final Value<bool> newValue = Value(currentVersion.isArchived ^ true);
+
+      return editHabitDetails(
+        HabitData(
+          id: Value(id),
+          currentVersion: Value(exists.currentVersion),
+          name: Value.absent(),
+          desc: Value.absent(),
+          categoryId: Value.absent(),
+          startDatetime: Value.absent(),
+          endDatetime: Value.absent(),
+          reminderTime: Value.absent(),
+          isArchived: newValue,
+        ),
+      );
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  @override
   Future<int?> insertCategory(CategoryData categoryData) async {
     if (categoryData.id != Value.absent()) {
       throw Exception(

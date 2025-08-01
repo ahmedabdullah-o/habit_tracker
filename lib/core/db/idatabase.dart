@@ -17,9 +17,16 @@ abstract class Idatabase {
   /// Returns the id of the deleted habit
   ///
   /// if null is returned then there is no such **undeleted** habit with this id.
-  /// 
+  ///
   /// **NOTE**: deleted habits are soft deleted, meaning they persist in the database but marked as deleted.
   Future<int?> deleteHabit(int id);
+
+  /// Return the id of the archived/unarchived habit
+  ///
+  /// if null is returned then there is no such **undeleted** habit with this id.
+  ///
+  /// **NOTE**: deleted habits are soft deleted, meaning they persist in the database but marked as deleted.
+  Future<int?> toggleArchiveHabit(int id);
 
   /// Inserts a new category into the database.
   ///
