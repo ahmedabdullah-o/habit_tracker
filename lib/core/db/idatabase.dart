@@ -14,6 +14,13 @@ abstract class Idatabase {
   /// Returns habits due today.
   Future<List<HabitData>?> getTodayHabits();
 
+  /// Returns the id of the deleted habit
+  ///
+  /// if null is returned then there is no such **undeleted** habit with this id.
+  /// 
+  /// **NOTE**: deleted habits are soft deleted, meaning they persist in the database but marked as deleted.
+  Future<int?> deleteHabit(int id);
+
   /// Inserts a new category into the database.
   ///
   /// If null is returned that means a category with the exact properties already exists.

@@ -291,6 +291,26 @@ class Database extends _$Database implements Idatabase {
   }
 
   @override
+  Future<int?> deleteHabit(int id) async {
+    try {
+      final exists =
+          await (select(habits)
+                ..where((u) => u.isDeleted.equals(false))
+                ..where((u) => u.id.equals(id)))
+              .getSingleOrNull();
+      if (exists != null) {
+        final habit = await (update(habits)..where((u) => u.id.equals(id)))
+            .write(HabitsCompanion(isDeleted: Value(true)));
+        return habit;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  @override
   Future<int?> insertCategory(CategoryData categoryData) async {
     if (categoryData.id != Value.absent()) {
       throw Exception(
