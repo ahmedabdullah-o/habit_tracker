@@ -329,15 +329,15 @@ class Database extends _$Database implements Idatabase {
     try {
       final category = await (select(
         categories,
-      )..where((u) => u.id.equals(id))).get();
-      if (category.isEmpty) {
+      )..where((u) => u.id.equals(id))).getSingleOrNull();
+      if (category == null) {
         return null;
       } else {
         return CategoryData(
-          id: Value(category[0].id),
-          name: Value(category[0].name),
-          color: Value(Color(category[0].color)),
-          iconCodePoint: Value(category[0].iconCodePoint),
+          id: Value(category.id),
+          name: Value(category.name),
+          color: Value(Color(category.color)),
+          iconCodePoint: Value(category.iconCodePoint),
         );
       }
     } catch (e) {
