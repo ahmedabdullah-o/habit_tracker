@@ -317,6 +317,8 @@ class Database extends _$Database implements Idatabase {
             iconCodePoint: categoryData.iconCodePoint.value,
           ),
         );
+      } else {
+        return null;
       }
       return insertId;
     } catch (e) {
@@ -366,6 +368,33 @@ class Database extends _$Database implements Idatabase {
         );
       }
       return out;
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  @override
+  Future<int?> editCategory(CategoryData newData) async {
+    try {
+      final duplicate =
+          await (select(categories)
+                ..where((u) => u.color.equals(newData.color.value.toARGB32()))
+                ..where(
+                  (u) => u.iconCodePoint.equals(newData.iconCodePoint.value),
+                ))
+              .getSingleOrNull();
+      if (duplicate == null) {
+        (update(categories)..where((u) => u.id.equals(newData.id.value))).write(
+          CategoriesCompanion(
+            name: newData.name,
+            color: Value(newData.color.value.toARGB32()),
+            iconCodePoint: newData.iconCodePoint,
+          ),
+        );
+        return newData.id.value;
+      } else {
+        return null;
+      }
     } catch (e) {
       throw Exception(e.toString());
     }

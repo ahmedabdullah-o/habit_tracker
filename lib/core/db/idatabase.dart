@@ -28,4 +28,7 @@ abstract class Idatabase {
   ///
   /// if null is returned then there are no categories
   Future<List<CategoryData>?> getAllCategories();
+
+  /// Returns the id of the edited category or null if the category doesn't exist
+  Future<int?> editCategory(CategoryData newData);
 }
