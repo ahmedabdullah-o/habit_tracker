@@ -346,6 +346,32 @@ class Database extends _$Database implements Idatabase {
   }
 
   @override
+  Future<List<CategoryData>?> getAllCategories() async {
+    try {
+      final query = await (select(
+        categories,
+      )..orderBy([(u) => OrderingTerm(expression: u.id)])).get();
+      if (query.isEmpty) {
+        return null;
+      }
+      List<CategoryData> out = [];
+      for (final row in query) {
+        out.add(
+          CategoryData(
+            id: Value(row.id),
+            name: Value(row.name),
+            color: Value(Color(row.color)),
+            iconCodePoint: Value(row.iconCodePoint),
+          ),
+        );
+      }
+      return out;
+    } catch (e) {
+      throw Exception(e.toString());
+    }
+  }
+
+  @override
   int get schemaVersion => 1;
 
   static QueryExecutor _openConnection() {

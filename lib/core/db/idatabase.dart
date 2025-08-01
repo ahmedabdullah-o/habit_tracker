@@ -23,4 +23,9 @@ abstract class Idatabase {
   ///
   /// if null is returned then there is no category with the given id
   Future<CategoryData?> getCategory(int id);
+
+  /// Returns all the previously inserted categories
+  ///
+  /// if null is returned then there are no categories
+  Future<List<CategoryData>?> getAllCategories();
 }
