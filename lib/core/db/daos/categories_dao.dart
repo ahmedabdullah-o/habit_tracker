@@ -10,7 +10,7 @@ part 'categories_dao.g.dart';
 @DriftAccessor(tables: [Categories])
 class CategoriesDao extends DatabaseAccessor<AppDatabase>
     with _$CategoriesDaoMixin {
-  CategoriesDao(AppDatabase db) : super(db);
+  CategoriesDao(super.db);
 
   
   Future<int?> insertCategory(CategoryData categoryData) async {

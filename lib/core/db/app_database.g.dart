@@ -1697,10 +1697,12 @@ class $HabitsLogTable extends HabitsLog
       'PRIMARY KEY AUTOINCREMENT',
     ),
   );
-  static const VerificationMeta _habitMeta = const VerificationMeta('habit');
+  static const VerificationMeta _habitIdMeta = const VerificationMeta(
+    'habitId',
+  );
   @override
-  late final GeneratedColumn<int> habit = GeneratedColumn<int>(
-    'habit',
+  late final GeneratedColumn<int> habitId = GeneratedColumn<int>(
+    'habit_id',
     aliasedName,
     false,
     type: DriftSqlType.int,
@@ -1739,15 +1741,14 @@ class $HabitsLogTable extends HabitsLog
   late final GeneratedColumn<double> state = GeneratedColumn<double>(
     'state',
     aliasedName,
-    false,
+    true,
     type: DriftSqlType.double,
     requiredDuringInsert: false,
-    defaultValue: const Constant(0),
   );
   @override
   List<GeneratedColumn> get $columns => [
     id,
-    habit,
+    habitId,
     habitsDetailsVersion,
     logDatetime,
     state,
@@ -1767,13 +1768,13 @@ class $HabitsLogTable extends HabitsLog
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     }
-    if (data.containsKey('habit')) {
+    if (data.containsKey('habit_id')) {
       context.handle(
-        _habitMeta,
-        habit.isAcceptableOrUnknown(data['habit']!, _habitMeta),
+        _habitIdMeta,
+        habitId.isAcceptableOrUnknown(data['habit_id']!, _habitIdMeta),
       );
     } else if (isInserting) {
-      context.missing(_habitMeta);
+      context.missing(_habitIdMeta);
     }
     if (data.containsKey('habits_details_version')) {
       context.handle(
@@ -1814,9 +1815,9 @@ class $HabitsLogTable extends HabitsLog
         DriftSqlType.int,
         data['${effectivePrefix}id'],
       )!,
-      habit: attachedDatabase.typeMapping.read(
+      habitId: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
-        data['${effectivePrefix}habit'],
+        data['${effectivePrefix}habit_id'],
       )!,
       habitsDetailsVersion: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
@@ -1829,7 +1830,7 @@ class $HabitsLogTable extends HabitsLog
       state: attachedDatabase.typeMapping.read(
         DriftSqlType.double,
         data['${effectivePrefix}state'],
-      )!,
+      ),
     );
   }
 
@@ -1841,35 +1842,39 @@ class $HabitsLogTable extends HabitsLog
 
 class HabitsLogData extends DataClass implements Insertable<HabitsLogData> {
   final int id;
-  final int habit;
+  final int habitId;
   final int habitsDetailsVersion;
   final DateTime logDatetime;
-  final double state;
+  final double? state;
   const HabitsLogData({
     required this.id,
-    required this.habit,
+    required this.habitId,
     required this.habitsDetailsVersion,
     required this.logDatetime,
-    required this.state,
+    this.state,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
-    map['habit'] = Variable<int>(habit);
+    map['habit_id'] = Variable<int>(habitId);
     map['habits_details_version'] = Variable<int>(habitsDetailsVersion);
     map['log_datetime'] = Variable<DateTime>(logDatetime);
-    map['state'] = Variable<double>(state);
+    if (!nullToAbsent || state != null) {
+      map['state'] = Variable<double>(state);
+    }
     return map;
   }
 
   HabitsLogCompanion toCompanion(bool nullToAbsent) {
     return HabitsLogCompanion(
       id: Value(id),
-      habit: Value(habit),
+      habitId: Value(habitId),
       habitsDetailsVersion: Value(habitsDetailsVersion),
       logDatetime: Value(logDatetime),
-      state: Value(state),
+      state: state == null && nullToAbsent
+          ? const Value.absent()
+          : Value(state),
     );
   }
 
@@ -1880,12 +1885,12 @@ class HabitsLogData extends DataClass implements Insertable<HabitsLogData> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return HabitsLogData(
       id: serializer.fromJson<int>(json['id']),
-      habit: serializer.fromJson<int>(json['habit']),
+      habitId: serializer.fromJson<int>(json['habitId']),
       habitsDetailsVersion: serializer.fromJson<int>(
         json['habitsDetailsVersion'],
       ),
       logDatetime: serializer.fromJson<DateTime>(json['logDatetime']),
-      state: serializer.fromJson<double>(json['state']),
+      state: serializer.fromJson<double?>(json['state']),
     );
   }
   @override
@@ -1893,30 +1898,30 @@ class HabitsLogData extends DataClass implements Insertable<HabitsLogData> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
-      'habit': serializer.toJson<int>(habit),
+      'habitId': serializer.toJson<int>(habitId),
       'habitsDetailsVersion': serializer.toJson<int>(habitsDetailsVersion),
       'logDatetime': serializer.toJson<DateTime>(logDatetime),
-      'state': serializer.toJson<double>(state),
+      'state': serializer.toJson<double?>(state),
     };
   }
 
   HabitsLogData copyWith({
     int? id,
-    int? habit,
+    int? habitId,
     int? habitsDetailsVersion,
     DateTime? logDatetime,
-    double? state,
+    Value<double?> state = const Value.absent(),
   }) => HabitsLogData(
     id: id ?? this.id,
-    habit: habit ?? this.habit,
+    habitId: habitId ?? this.habitId,
     habitsDetailsVersion: habitsDetailsVersion ?? this.habitsDetailsVersion,
     logDatetime: logDatetime ?? this.logDatetime,
-    state: state ?? this.state,
+    state: state.present ? state.value : this.state,
   );
   HabitsLogData copyWithCompanion(HabitsLogCompanion data) {
     return HabitsLogData(
       id: data.id.present ? data.id.value : this.id,
-      habit: data.habit.present ? data.habit.value : this.habit,
+      habitId: data.habitId.present ? data.habitId.value : this.habitId,
       habitsDetailsVersion: data.habitsDetailsVersion.present
           ? data.habitsDetailsVersion.value
           : this.habitsDetailsVersion,
@@ -1931,7 +1936,7 @@ class HabitsLogData extends DataClass implements Insertable<HabitsLogData> {
   String toString() {
     return (StringBuffer('HabitsLogData(')
           ..write('id: $id, ')
-          ..write('habit: $habit, ')
+          ..write('habitId: $habitId, ')
           ..write('habitsDetailsVersion: $habitsDetailsVersion, ')
           ..write('logDatetime: $logDatetime, ')
           ..write('state: $state')
@@ -1941,13 +1946,13 @@ class HabitsLogData extends DataClass implements Insertable<HabitsLogData> {
 
   @override
   int get hashCode =>
-      Object.hash(id, habit, habitsDetailsVersion, logDatetime, state);
+      Object.hash(id, habitId, habitsDetailsVersion, logDatetime, state);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is HabitsLogData &&
           other.id == this.id &&
-          other.habit == this.habit &&
+          other.habitId == this.habitId &&
           other.habitsDetailsVersion == this.habitsDetailsVersion &&
           other.logDatetime == this.logDatetime &&
           other.state == this.state);
@@ -1955,35 +1960,35 @@ class HabitsLogData extends DataClass implements Insertable<HabitsLogData> {
 
 class HabitsLogCompanion extends UpdateCompanion<HabitsLogData> {
   final Value<int> id;
-  final Value<int> habit;
+  final Value<int> habitId;
   final Value<int> habitsDetailsVersion;
   final Value<DateTime> logDatetime;
-  final Value<double> state;
+  final Value<double?> state;
   const HabitsLogCompanion({
     this.id = const Value.absent(),
-    this.habit = const Value.absent(),
+    this.habitId = const Value.absent(),
     this.habitsDetailsVersion = const Value.absent(),
     this.logDatetime = const Value.absent(),
     this.state = const Value.absent(),
   });
   HabitsLogCompanion.insert({
     this.id = const Value.absent(),
-    required int habit,
+    required int habitId,
     required int habitsDetailsVersion,
     this.logDatetime = const Value.absent(),
     this.state = const Value.absent(),
-  }) : habit = Value(habit),
+  }) : habitId = Value(habitId),
        habitsDetailsVersion = Value(habitsDetailsVersion);
   static Insertable<HabitsLogData> custom({
     Expression<int>? id,
-    Expression<int>? habit,
+    Expression<int>? habitId,
     Expression<int>? habitsDetailsVersion,
     Expression<DateTime>? logDatetime,
     Expression<double>? state,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
-      if (habit != null) 'habit': habit,
+      if (habitId != null) 'habit_id': habitId,
       if (habitsDetailsVersion != null)
         'habits_details_version': habitsDetailsVersion,
       if (logDatetime != null) 'log_datetime': logDatetime,
@@ -1993,14 +1998,14 @@ class HabitsLogCompanion extends UpdateCompanion<HabitsLogData> {
 
   HabitsLogCompanion copyWith({
     Value<int>? id,
-    Value<int>? habit,
+    Value<int>? habitId,
     Value<int>? habitsDetailsVersion,
     Value<DateTime>? logDatetime,
-    Value<double>? state,
+    Value<double?>? state,
   }) {
     return HabitsLogCompanion(
       id: id ?? this.id,
-      habit: habit ?? this.habit,
+      habitId: habitId ?? this.habitId,
       habitsDetailsVersion: habitsDetailsVersion ?? this.habitsDetailsVersion,
       logDatetime: logDatetime ?? this.logDatetime,
       state: state ?? this.state,
@@ -2013,8 +2018,8 @@ class HabitsLogCompanion extends UpdateCompanion<HabitsLogData> {
     if (id.present) {
       map['id'] = Variable<int>(id.value);
     }
-    if (habit.present) {
-      map['habit'] = Variable<int>(habit.value);
+    if (habitId.present) {
+      map['habit_id'] = Variable<int>(habitId.value);
     }
     if (habitsDetailsVersion.present) {
       map['habits_details_version'] = Variable<int>(habitsDetailsVersion.value);
@@ -2032,7 +2037,7 @@ class HabitsLogCompanion extends UpdateCompanion<HabitsLogData> {
   String toString() {
     return (StringBuffer('HabitsLogCompanion(')
           ..write('id: $id, ')
-          ..write('habit: $habit, ')
+          ..write('habitId: $habitId, ')
           ..write('habitsDetailsVersion: $habitsDetailsVersion, ')
           ..write('logDatetime: $logDatetime, ')
           ..write('state: $state')
@@ -2050,10 +2055,11 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $HabitsLogTable habitsLog = $HabitsLogTable(this);
   late final Index habitLogCreationTimeIdx = Index(
     'habit_log_creation_time_idx',
-    'CREATE INDEX habit_log_creation_time_idx ON habits_log (habit, log_datetime)',
+    'CREATE INDEX habit_log_creation_time_idx ON habits_log (habit_id, log_datetime)',
   );
   late final HabitsDao habitsDao = HabitsDao(this as AppDatabase);
   late final CategoriesDao categoriesDao = CategoriesDao(this as AppDatabase);
+  late final HabitsLogDao habitsLogDao = HabitsLogDao(this as AppDatabase);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -2112,14 +2118,14 @@ final class $$HabitsTableReferences
   static MultiTypedResultKey<$HabitsLogTable, List<HabitsLogData>>
   _habitsLogRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
     db.habitsLog,
-    aliasName: $_aliasNameGenerator(db.habits.id, db.habitsLog.habit),
+    aliasName: $_aliasNameGenerator(db.habits.id, db.habitsLog.habitId),
   );
 
   $$HabitsLogTableProcessedTableManager get habitsLogRefs {
     final manager = $$HabitsLogTableTableManager(
       $_db,
       $_db.habitsLog,
-    ).filter((f) => f.habit.id.sqlEquals($_itemColumn<int>('id')!));
+    ).filter((f) => f.habitId.id.sqlEquals($_itemColumn<int>('id')!));
 
     final cache = $_typedResult.readTableOrNull(_habitsLogRefsTable($_db));
     return ProcessedTableManager(
@@ -2194,7 +2200,7 @@ class $$HabitsTableFilterComposer
       composer: this,
       getCurrentColumn: (t) => t.id,
       referencedTable: $db.habitsLog,
-      getReferencedColumn: (t) => t.habit,
+      getReferencedColumn: (t) => t.habitId,
       builder:
           (
             joinBuilder, {
@@ -2306,7 +2312,7 @@ class $$HabitsTableAnnotationComposer
       composer: this,
       getCurrentColumn: (t) => t.id,
       referencedTable: $db.habitsLog,
-      getReferencedColumn: (t) => t.habit,
+      getReferencedColumn: (t) => t.habitId,
       builder:
           (
             joinBuilder, {
@@ -2434,7 +2440,7 @@ class $$HabitsTableTableManager
                               ).habitsLogRefs,
                           referencedItemsForCurrentItem:
                               (item, referencedItems) => referencedItems.where(
-                                (e) => e.habit == item.id,
+                                (e) => e.habitId == item.id,
                               ),
                           typedResults: items,
                         ),
@@ -3509,36 +3515,36 @@ typedef $$HabitsDetailsTableProcessedTableManager =
 typedef $$HabitsLogTableCreateCompanionBuilder =
     HabitsLogCompanion Function({
       Value<int> id,
-      required int habit,
+      required int habitId,
       required int habitsDetailsVersion,
       Value<DateTime> logDatetime,
-      Value<double> state,
+      Value<double?> state,
     });
 typedef $$HabitsLogTableUpdateCompanionBuilder =
     HabitsLogCompanion Function({
       Value<int> id,
-      Value<int> habit,
+      Value<int> habitId,
       Value<int> habitsDetailsVersion,
       Value<DateTime> logDatetime,
-      Value<double> state,
+      Value<double?> state,
     });
 
 final class $$HabitsLogTableReferences
     extends BaseReferences<_$AppDatabase, $HabitsLogTable, HabitsLogData> {
   $$HabitsLogTableReferences(super.$_db, super.$_table, super.$_typedResult);
 
-  static $HabitsTable _habitTable(_$AppDatabase db) => db.habits.createAlias(
-    $_aliasNameGenerator(db.habitsLog.habit, db.habits.id),
+  static $HabitsTable _habitIdTable(_$AppDatabase db) => db.habits.createAlias(
+    $_aliasNameGenerator(db.habitsLog.habitId, db.habits.id),
   );
 
-  $$HabitsTableProcessedTableManager get habit {
-    final $_column = $_itemColumn<int>('habit')!;
+  $$HabitsTableProcessedTableManager get habitId {
+    final $_column = $_itemColumn<int>('habit_id')!;
 
     final manager = $$HabitsTableTableManager(
       $_db,
       $_db.habits,
     ).filter((f) => f.id.sqlEquals($_column));
-    final item = $_typedResult.readTableOrNull(_habitTable($_db));
+    final item = $_typedResult.readTableOrNull(_habitIdTable($_db));
     if (item == null) return manager;
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: [item]),
@@ -3594,10 +3600,10 @@ class $$HabitsLogTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  $$HabitsTableFilterComposer get habit {
+  $$HabitsTableFilterComposer get habitId {
     final $$HabitsTableFilterComposer composer = $composerBuilder(
       composer: this,
-      getCurrentColumn: (t) => t.habit,
+      getCurrentColumn: (t) => t.habitId,
       referencedTable: $db.habits,
       getReferencedColumn: (t) => t.id,
       builder:
@@ -3665,10 +3671,10 @@ class $$HabitsLogTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  $$HabitsTableOrderingComposer get habit {
+  $$HabitsTableOrderingComposer get habitId {
     final $$HabitsTableOrderingComposer composer = $composerBuilder(
       composer: this,
-      getCurrentColumn: (t) => t.habit,
+      getCurrentColumn: (t) => t.habitId,
       referencedTable: $db.habits,
       getReferencedColumn: (t) => t.id,
       builder:
@@ -3732,10 +3738,10 @@ class $$HabitsLogTableAnnotationComposer
   GeneratedColumn<double> get state =>
       $composableBuilder(column: $table.state, builder: (column) => column);
 
-  $$HabitsTableAnnotationComposer get habit {
+  $$HabitsTableAnnotationComposer get habitId {
     final $$HabitsTableAnnotationComposer composer = $composerBuilder(
       composer: this,
-      getCurrentColumn: (t) => t.habit,
+      getCurrentColumn: (t) => t.habitId,
       referencedTable: $db.habits,
       getReferencedColumn: (t) => t.id,
       builder:
@@ -3792,7 +3798,7 @@ class $$HabitsLogTableTableManager
           $$HabitsLogTableUpdateCompanionBuilder,
           (HabitsLogData, $$HabitsLogTableReferences),
           HabitsLogData,
-          PrefetchHooks Function({bool habit, bool habitsDetailsVersion})
+          PrefetchHooks Function({bool habitId, bool habitsDetailsVersion})
         > {
   $$HabitsLogTableTableManager(_$AppDatabase db, $HabitsLogTable table)
     : super(
@@ -3808,13 +3814,13 @@ class $$HabitsLogTableTableManager
           updateCompanionCallback:
               ({
                 Value<int> id = const Value.absent(),
-                Value<int> habit = const Value.absent(),
+                Value<int> habitId = const Value.absent(),
                 Value<int> habitsDetailsVersion = const Value.absent(),
                 Value<DateTime> logDatetime = const Value.absent(),
-                Value<double> state = const Value.absent(),
+                Value<double?> state = const Value.absent(),
               }) => HabitsLogCompanion(
                 id: id,
-                habit: habit,
+                habitId: habitId,
                 habitsDetailsVersion: habitsDetailsVersion,
                 logDatetime: logDatetime,
                 state: state,
@@ -3822,13 +3828,13 @@ class $$HabitsLogTableTableManager
           createCompanionCallback:
               ({
                 Value<int> id = const Value.absent(),
-                required int habit,
+                required int habitId,
                 required int habitsDetailsVersion,
                 Value<DateTime> logDatetime = const Value.absent(),
-                Value<double> state = const Value.absent(),
+                Value<double?> state = const Value.absent(),
               }) => HabitsLogCompanion.insert(
                 id: id,
-                habit: habit,
+                habitId: habitId,
                 habitsDetailsVersion: habitsDetailsVersion,
                 logDatetime: logDatetime,
                 state: state,
@@ -3842,7 +3848,7 @@ class $$HabitsLogTableTableManager
               )
               .toList(),
           prefetchHooksCallback:
-              ({habit = false, habitsDetailsVersion = false}) {
+              ({habitId = false, habitsDetailsVersion = false}) {
                 return PrefetchHooks(
                   db: db,
                   explicitlyWatchedTables: [],
@@ -3862,15 +3868,15 @@ class $$HabitsLogTableTableManager
                           dynamic
                         >
                       >(state) {
-                        if (habit) {
+                        if (habitId) {
                           state =
                               state.withJoin(
                                     currentTable: table,
-                                    currentColumn: table.habit,
+                                    currentColumn: table.habitId,
                                     referencedTable: $$HabitsLogTableReferences
-                                        ._habitTable(db),
+                                        ._habitIdTable(db),
                                     referencedColumn: $$HabitsLogTableReferences
-                                        ._habitTable(db)
+                                        ._habitIdTable(db)
                                         .id,
                                   )
                                   as T;
@@ -3912,7 +3918,7 @@ typedef $$HabitsLogTableProcessedTableManager =
       $$HabitsLogTableUpdateCompanionBuilder,
       (HabitsLogData, $$HabitsLogTableReferences),
       HabitsLogData,
-      PrefetchHooks Function({bool habit, bool habitsDetailsVersion})
+      PrefetchHooks Function({bool habitId, bool habitsDetailsVersion})
     >;
 
 class $AppDatabaseManager {

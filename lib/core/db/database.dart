@@ -2,6 +2,7 @@ import 'package:habit_tracker/core/db/app_database.dart';
 import 'package:habit_tracker/core/db/idatabase.dart';
 import 'package:habit_tracker/core/entities/category_data.dart';
 import 'package:habit_tracker/core/entities/habit_data.dart';
+import 'package:habit_tracker/core/entities/log_data.dart';
 
 class Database implements Idatabase {
   final AppDatabase db;
@@ -34,6 +35,11 @@ class Database implements Idatabase {
   @override
   Future<int?> toggleArchiveHabit(int id) {
     return db.habitsDao.toggleArchiveHabit(id);
+  }
+
+  @override
+  Future<int?> logHabit(LogData logData) async {
+    return db.habitsLogDao.insertLog(logData);
   }
 
   @override

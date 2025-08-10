@@ -10,7 +10,7 @@ part 'habits_dao.g.dart';
 
 @DriftAccessor(tables: [Habits])
 class HabitsDao extends DatabaseAccessor<AppDatabase> with _$HabitsDaoMixin {
-  HabitsDao(AppDatabase db) : super(db);
+  HabitsDao(super.db);
 
   List<HabitData>? _habitsCache;
   List<HabitData>? _habitsTodayCache;

@@ -1,5 +1,6 @@
 import 'package:habit_tracker/core/entities/category_data.dart';
 import 'package:habit_tracker/core/entities/habit_data.dart';
+import 'package:habit_tracker/core/entities/log_data.dart';
 
 abstract class Idatabase {
   /// Returns the habit row id.
@@ -27,6 +28,11 @@ abstract class Idatabase {
   ///
   /// **NOTE**: deleted habits are soft deleted, meaning they persist in the database but marked as deleted.
   Future<int?> toggleArchiveHabit(int id);
+
+  /// Returns the id of the log
+  ///
+  /// if null is returned then there is no such **undeleted** habit with this id.
+  Future<int?> logHabit(LogData logData);
 
   /// Inserts a new category into the database.
   ///
