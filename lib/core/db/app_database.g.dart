@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'database.dart';
+part of 'app_database.dart';
 
 // ignore_for_file: type=lint
 class $HabitsTable extends Habits with TableInfo<$HabitsTable, Habit> {
@@ -2041,9 +2041,9 @@ class HabitsLogCompanion extends UpdateCompanion<HabitsLogData> {
   }
 }
 
-abstract class _$Database extends GeneratedDatabase {
-  _$Database(QueryExecutor e) : super(e);
-  $DatabaseManager get managers => $DatabaseManager(this);
+abstract class _$AppDatabase extends GeneratedDatabase {
+  _$AppDatabase(QueryExecutor e) : super(e);
+  $AppDatabaseManager get managers => $AppDatabaseManager(this);
   late final $HabitsTable habits = $HabitsTable(this);
   late final $CategoriesTable categories = $CategoriesTable(this);
   late final $HabitsDetailsTable habitsDetails = $HabitsDetailsTable(this);
@@ -2052,6 +2052,8 @@ abstract class _$Database extends GeneratedDatabase {
     'habit_log_creation_time_idx',
     'CREATE INDEX habit_log_creation_time_idx ON habits_log (habit, log_datetime)',
   );
+  late final HabitsDao habitsDao = HabitsDao(this as AppDatabase);
+  late final CategoriesDao categoriesDao = CategoriesDao(this as AppDatabase);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -2086,11 +2088,11 @@ typedef $$HabitsTableUpdateCompanionBuilder =
     });
 
 final class $$HabitsTableReferences
-    extends BaseReferences<_$Database, $HabitsTable, Habit> {
+    extends BaseReferences<_$AppDatabase, $HabitsTable, Habit> {
   $$HabitsTableReferences(super.$_db, super.$_table, super.$_typedResult);
 
   static MultiTypedResultKey<$HabitsDetailsTable, List<HabitsDetail>>
-  _habitsDetailsRefsTable(_$Database db) => MultiTypedResultKey.fromTable(
+  _habitsDetailsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
     db.habitsDetails,
     aliasName: $_aliasNameGenerator(db.habits.id, db.habitsDetails.habitId),
   );
@@ -2108,7 +2110,7 @@ final class $$HabitsTableReferences
   }
 
   static MultiTypedResultKey<$HabitsLogTable, List<HabitsLogData>>
-  _habitsLogRefsTable(_$Database db) => MultiTypedResultKey.fromTable(
+  _habitsLogRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
     db.habitsLog,
     aliasName: $_aliasNameGenerator(db.habits.id, db.habitsLog.habit),
   );
@@ -2126,7 +2128,8 @@ final class $$HabitsTableReferences
   }
 }
 
-class $$HabitsTableFilterComposer extends Composer<_$Database, $HabitsTable> {
+class $$HabitsTableFilterComposer
+    extends Composer<_$AppDatabase, $HabitsTable> {
   $$HabitsTableFilterComposer({
     required super.$db,
     required super.$table,
@@ -2210,7 +2213,8 @@ class $$HabitsTableFilterComposer extends Composer<_$Database, $HabitsTable> {
   }
 }
 
-class $$HabitsTableOrderingComposer extends Composer<_$Database, $HabitsTable> {
+class $$HabitsTableOrderingComposer
+    extends Composer<_$AppDatabase, $HabitsTable> {
   $$HabitsTableOrderingComposer({
     required super.$db,
     required super.$table,
@@ -2245,7 +2249,7 @@ class $$HabitsTableOrderingComposer extends Composer<_$Database, $HabitsTable> {
 }
 
 class $$HabitsTableAnnotationComposer
-    extends Composer<_$Database, $HabitsTable> {
+    extends Composer<_$AppDatabase, $HabitsTable> {
   $$HabitsTableAnnotationComposer({
     required super.$db,
     required super.$table,
@@ -2324,7 +2328,7 @@ class $$HabitsTableAnnotationComposer
 class $$HabitsTableTableManager
     extends
         RootTableManager<
-          _$Database,
+          _$AppDatabase,
           $HabitsTable,
           Habit,
           $$HabitsTableFilterComposer,
@@ -2336,7 +2340,7 @@ class $$HabitsTableTableManager
           Habit,
           PrefetchHooks Function({bool habitsDetailsRefs, bool habitsLogRefs})
         > {
-  $$HabitsTableTableManager(_$Database db, $HabitsTable table)
+  $$HabitsTableTableManager(_$AppDatabase db, $HabitsTable table)
     : super(
         TableManagerState(
           db: db,
@@ -2444,7 +2448,7 @@ class $$HabitsTableTableManager
 
 typedef $$HabitsTableProcessedTableManager =
     ProcessedTableManager<
-      _$Database,
+      _$AppDatabase,
       $HabitsTable,
       Habit,
       $$HabitsTableFilterComposer,
@@ -2472,11 +2476,11 @@ typedef $$CategoriesTableUpdateCompanionBuilder =
     });
 
 final class $$CategoriesTableReferences
-    extends BaseReferences<_$Database, $CategoriesTable, Category> {
+    extends BaseReferences<_$AppDatabase, $CategoriesTable, Category> {
   $$CategoriesTableReferences(super.$_db, super.$_table, super.$_typedResult);
 
   static MultiTypedResultKey<$HabitsDetailsTable, List<HabitsDetail>>
-  _habitsDetailsRefsTable(_$Database db) => MultiTypedResultKey.fromTable(
+  _habitsDetailsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
     db.habitsDetails,
     aliasName: $_aliasNameGenerator(
       db.categories.id,
@@ -2498,7 +2502,7 @@ final class $$CategoriesTableReferences
 }
 
 class $$CategoriesTableFilterComposer
-    extends Composer<_$Database, $CategoriesTable> {
+    extends Composer<_$AppDatabase, $CategoriesTable> {
   $$CategoriesTableFilterComposer({
     required super.$db,
     required super.$table,
@@ -2553,7 +2557,7 @@ class $$CategoriesTableFilterComposer
 }
 
 class $$CategoriesTableOrderingComposer
-    extends Composer<_$Database, $CategoriesTable> {
+    extends Composer<_$AppDatabase, $CategoriesTable> {
   $$CategoriesTableOrderingComposer({
     required super.$db,
     required super.$table,
@@ -2583,7 +2587,7 @@ class $$CategoriesTableOrderingComposer
 }
 
 class $$CategoriesTableAnnotationComposer
-    extends Composer<_$Database, $CategoriesTable> {
+    extends Composer<_$AppDatabase, $CategoriesTable> {
   $$CategoriesTableAnnotationComposer({
     required super.$db,
     required super.$table,
@@ -2634,7 +2638,7 @@ class $$CategoriesTableAnnotationComposer
 class $$CategoriesTableTableManager
     extends
         RootTableManager<
-          _$Database,
+          _$AppDatabase,
           $CategoriesTable,
           Category,
           $$CategoriesTableFilterComposer,
@@ -2646,7 +2650,7 @@ class $$CategoriesTableTableManager
           Category,
           PrefetchHooks Function({bool habitsDetailsRefs})
         > {
-  $$CategoriesTableTableManager(_$Database db, $CategoriesTable table)
+  $$CategoriesTableTableManager(_$AppDatabase db, $CategoriesTable table)
     : super(
         TableManagerState(
           db: db,
@@ -2727,7 +2731,7 @@ class $$CategoriesTableTableManager
 
 typedef $$CategoriesTableProcessedTableManager =
     ProcessedTableManager<
-      _$Database,
+      _$AppDatabase,
       $CategoriesTable,
       Category,
       $$CategoriesTableFilterComposer,
@@ -2781,14 +2785,14 @@ typedef $$HabitsDetailsTableUpdateCompanionBuilder =
     });
 
 final class $$HabitsDetailsTableReferences
-    extends BaseReferences<_$Database, $HabitsDetailsTable, HabitsDetail> {
+    extends BaseReferences<_$AppDatabase, $HabitsDetailsTable, HabitsDetail> {
   $$HabitsDetailsTableReferences(
     super.$_db,
     super.$_table,
     super.$_typedResult,
   );
 
-  static $HabitsTable _habitIdTable(_$Database db) => db.habits.createAlias(
+  static $HabitsTable _habitIdTable(_$AppDatabase db) => db.habits.createAlias(
     $_aliasNameGenerator(db.habitsDetails.habitId, db.habits.id),
   );
 
@@ -2806,7 +2810,7 @@ final class $$HabitsDetailsTableReferences
     );
   }
 
-  static $CategoriesTable _categoryIdTable(_$Database db) =>
+  static $CategoriesTable _categoryIdTable(_$AppDatabase db) =>
       db.categories.createAlias(
         $_aliasNameGenerator(db.habitsDetails.categoryId, db.categories.id),
       );
@@ -2826,7 +2830,7 @@ final class $$HabitsDetailsTableReferences
   }
 
   static MultiTypedResultKey<$HabitsLogTable, List<HabitsLogData>>
-  _habitsLogRefsTable(_$Database db) => MultiTypedResultKey.fromTable(
+  _habitsLogRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
     db.habitsLog,
     aliasName: $_aliasNameGenerator(
       db.habitsDetails.version,
@@ -2849,7 +2853,7 @@ final class $$HabitsDetailsTableReferences
 }
 
 class $$HabitsDetailsTableFilterComposer
-    extends Composer<_$Database, $HabitsDetailsTable> {
+    extends Composer<_$AppDatabase, $HabitsDetailsTable> {
   $$HabitsDetailsTableFilterComposer({
     required super.$db,
     required super.$table,
@@ -3005,7 +3009,7 @@ class $$HabitsDetailsTableFilterComposer
 }
 
 class $$HabitsDetailsTableOrderingComposer
-    extends Composer<_$Database, $HabitsDetailsTable> {
+    extends Composer<_$AppDatabase, $HabitsDetailsTable> {
   $$HabitsDetailsTableOrderingComposer({
     required super.$db,
     required super.$table,
@@ -3136,7 +3140,7 @@ class $$HabitsDetailsTableOrderingComposer
 }
 
 class $$HabitsDetailsTableAnnotationComposer
-    extends Composer<_$Database, $HabitsDetailsTable> {
+    extends Composer<_$AppDatabase, $HabitsDetailsTable> {
   $$HabitsDetailsTableAnnotationComposer({
     required super.$db,
     required super.$table,
@@ -3288,7 +3292,7 @@ class $$HabitsDetailsTableAnnotationComposer
 class $$HabitsDetailsTableTableManager
     extends
         RootTableManager<
-          _$Database,
+          _$AppDatabase,
           $HabitsDetailsTable,
           HabitsDetail,
           $$HabitsDetailsTableFilterComposer,
@@ -3304,7 +3308,7 @@ class $$HabitsDetailsTableTableManager
             bool habitsLogRefs,
           })
         > {
-  $$HabitsDetailsTableTableManager(_$Database db, $HabitsDetailsTable table)
+  $$HabitsDetailsTableTableManager(_$AppDatabase db, $HabitsDetailsTable table)
     : super(
         TableManagerState(
           db: db,
@@ -3486,7 +3490,7 @@ class $$HabitsDetailsTableTableManager
 
 typedef $$HabitsDetailsTableProcessedTableManager =
     ProcessedTableManager<
-      _$Database,
+      _$AppDatabase,
       $HabitsDetailsTable,
       HabitsDetail,
       $$HabitsDetailsTableFilterComposer,
@@ -3520,10 +3524,10 @@ typedef $$HabitsLogTableUpdateCompanionBuilder =
     });
 
 final class $$HabitsLogTableReferences
-    extends BaseReferences<_$Database, $HabitsLogTable, HabitsLogData> {
+    extends BaseReferences<_$AppDatabase, $HabitsLogTable, HabitsLogData> {
   $$HabitsLogTableReferences(super.$_db, super.$_table, super.$_typedResult);
 
-  static $HabitsTable _habitTable(_$Database db) => db.habits.createAlias(
+  static $HabitsTable _habitTable(_$AppDatabase db) => db.habits.createAlias(
     $_aliasNameGenerator(db.habitsLog.habit, db.habits.id),
   );
 
@@ -3541,7 +3545,7 @@ final class $$HabitsLogTableReferences
     );
   }
 
-  static $HabitsDetailsTable _habitsDetailsVersionTable(_$Database db) =>
+  static $HabitsDetailsTable _habitsDetailsVersionTable(_$AppDatabase db) =>
       db.habitsDetails.createAlias(
         $_aliasNameGenerator(
           db.habitsLog.habitsDetailsVersion,
@@ -3567,7 +3571,7 @@ final class $$HabitsLogTableReferences
 }
 
 class $$HabitsLogTableFilterComposer
-    extends Composer<_$Database, $HabitsLogTable> {
+    extends Composer<_$AppDatabase, $HabitsLogTable> {
   $$HabitsLogTableFilterComposer({
     required super.$db,
     required super.$table,
@@ -3638,7 +3642,7 @@ class $$HabitsLogTableFilterComposer
 }
 
 class $$HabitsLogTableOrderingComposer
-    extends Composer<_$Database, $HabitsLogTable> {
+    extends Composer<_$AppDatabase, $HabitsLogTable> {
   $$HabitsLogTableOrderingComposer({
     required super.$db,
     required super.$table,
@@ -3709,7 +3713,7 @@ class $$HabitsLogTableOrderingComposer
 }
 
 class $$HabitsLogTableAnnotationComposer
-    extends Composer<_$Database, $HabitsLogTable> {
+    extends Composer<_$AppDatabase, $HabitsLogTable> {
   $$HabitsLogTableAnnotationComposer({
     required super.$db,
     required super.$table,
@@ -3778,7 +3782,7 @@ class $$HabitsLogTableAnnotationComposer
 class $$HabitsLogTableTableManager
     extends
         RootTableManager<
-          _$Database,
+          _$AppDatabase,
           $HabitsLogTable,
           HabitsLogData,
           $$HabitsLogTableFilterComposer,
@@ -3790,7 +3794,7 @@ class $$HabitsLogTableTableManager
           HabitsLogData,
           PrefetchHooks Function({bool habit, bool habitsDetailsVersion})
         > {
-  $$HabitsLogTableTableManager(_$Database db, $HabitsLogTable table)
+  $$HabitsLogTableTableManager(_$AppDatabase db, $HabitsLogTable table)
     : super(
         TableManagerState(
           db: db,
@@ -3898,7 +3902,7 @@ class $$HabitsLogTableTableManager
 
 typedef $$HabitsLogTableProcessedTableManager =
     ProcessedTableManager<
-      _$Database,
+      _$AppDatabase,
       $HabitsLogTable,
       HabitsLogData,
       $$HabitsLogTableFilterComposer,
@@ -3911,9 +3915,9 @@ typedef $$HabitsLogTableProcessedTableManager =
       PrefetchHooks Function({bool habit, bool habitsDetailsVersion})
     >;
 
-class $DatabaseManager {
-  final _$Database _db;
-  $DatabaseManager(this._db);
+class $AppDatabaseManager {
+  final _$AppDatabase _db;
+  $AppDatabaseManager(this._db);
   $$HabitsTableTableManager get habits =>
       $$HabitsTableTableManager(_db, _db.habits);
   $$CategoriesTableTableManager get categories =>

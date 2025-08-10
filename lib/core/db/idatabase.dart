@@ -6,7 +6,7 @@ abstract class Idatabase {
   Future<int?> insertHabit(HabitData habitData);
 
   /// Returns the latest version of the entity `Habit`.
-  Future<int?> editHabitDetails(HabitData habitData);
+  Future<int?> editHabitDetails(HabitData newData);
 
   /// Returns all undeleted habits.
   Future<List<HabitData>?> getAllHabits();
