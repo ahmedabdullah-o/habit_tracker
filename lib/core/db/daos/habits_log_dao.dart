@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 import 'package:habit_tracker/core/db/app_database.dart';
 import 'package:habit_tracker/core/db/tables/habits_log.dart';
+import 'package:habit_tracker/core/entities/habit_data.dart';
 import 'package:habit_tracker/core/entities/log_data.dart';
 
 part 'habits_log_dao.g.dart';
@@ -31,5 +32,27 @@ class HabitsLogDao extends DatabaseAccessor<AppDatabase>
       ),
     );
     return op;
+  }
+
+  Future<Map<int, List<Map<DateTime, double?>>>> getLog(
+    List<HabitData> habits,
+  ) async {
+    List<int> habitsIds = habits.map((row) => row.id.value).toList();
+
+    try {
+      final query = await (db.select(
+        habitsLog,
+      )..where((u) => u.habitId.isIn(habitsIds))).get();
+      Map<int, List<Map<DateTime, double?>>> out = {};
+      for (final item in query) {
+        if (!out.containsKey(item.habitId)) {
+          out[item.habitId] = [];
+        }
+        out[item.habitId]!.add({item.logDatetime: item.state});
+      }
+      return out;
+    } catch (e) {
+      throw Exception(e.toString());
+    }
   }
 }

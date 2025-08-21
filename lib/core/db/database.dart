@@ -42,6 +42,12 @@ class Database implements Idatabase {
     return db.habitsLogDao.insertLog(logData);
   }
 
+  Future<Map<int, List<Map<DateTime, double?>>>> getLog(
+    List<HabitData> habits,
+  ) {
+    return db.habitsLogDao.getLog(habits);
+  }
+
   @override
   Future<int?> insertCategory(CategoryData categoryData) {
     return db.categoriesDao.insertCategory(categoryData);

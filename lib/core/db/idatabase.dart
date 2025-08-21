@@ -34,6 +34,9 @@ abstract class Idatabase {
   /// if null is returned then there is no such **undeleted** habit with this id.
   Future<int?> logHabit(LogData logData);
 
+  /// Return a map with the habitId as the key and a list of maps of DateTime and state.
+  Future<Map<int, List<Map<DateTime, double?>>>> getLog(List<HabitData> habits);
+
   /// Inserts a new category into the database.
   ///
   /// If null is returned that means a category with the exact properties already exists.
