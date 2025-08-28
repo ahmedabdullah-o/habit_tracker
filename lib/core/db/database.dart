@@ -38,10 +38,11 @@ class Database implements Idatabase {
   }
 
   @override
-  Future<int?> logHabit(LogData logData) async {
+  Future<int?> logHabit(LogData logData) {
     return db.habitsLogDao.insertLog(logData);
   }
 
+  @override
   Future<Map<int, List<Map<DateTime, double?>>>> getLog(
     List<HabitData> habits,
   ) {
