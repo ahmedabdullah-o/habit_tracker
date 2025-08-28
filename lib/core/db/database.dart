@@ -7,6 +7,18 @@ import 'package:habit_tracker/core/entities/log_data.dart';
 class Database implements Idatabase {
   final AppDatabase db;
   Database(this.db);
+
+  @override
+  Future<void> open() {
+    // TODO: implement open
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> close() async {
+    return await db.close();
+  }
+
   @override
   Future<int?> insertHabit(HabitData habitData) {
     return db.habitsDao.insertHabit(habitData);
