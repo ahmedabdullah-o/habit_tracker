@@ -1,83 +1,147 @@
+import 'package:drift/native.dart';
+import 'package:drift_flutter/drift_flutter.dart';
 import 'package:habit_tracker/core/db/app_database.dart';
 import 'package:habit_tracker/core/db/idatabase.dart';
 import 'package:habit_tracker/core/entities/category_data.dart';
 import 'package:habit_tracker/core/entities/habit_data.dart';
 import 'package:habit_tracker/core/entities/log_data.dart';
+import 'package:path_provider/path_provider.dart';
 
 class Database implements Idatabase {
-  final AppDatabase db;
-  Database(this.db);
+  final bool inMemory;
+  Database({this.inMemory = false});
 
-  @override
-  Future<void> open() {
-    // TODO: implement open
-    throw UnimplementedError();
+  bool _isInitialized = false;
+  late final AppDatabase db;
+
+  Future<void> _initializeDB(bool inMemory) async {
+    db = inMemory
+        ? AppDatabase(NativeDatabase.memory())
+        : AppDatabase(
+            driftDatabase(
+              name: "DriftDatabase",
+              native: DriftNativeOptions(
+                databaseDirectory: () async => await getLibraryDirectory(),
+              ),
+            ),
+          );
+    _isInitialized = true;
   }
+
+  // @override
+  // Future<void> clearMemory() async {
+  //   if (!inMemory) {
+  //     throw Exception(
+  //       'You\'re using clearMemory() with a non-in-memory database',
+  //     );
+  //   }
+  //   if (!_isInitialized) {
+  //     await _initializeDB(inMemory);
+  //   }
+  //   await db.close();
+  //   db = AppDatabase(NativeDatabase.memory());
+  // }
 
   @override
   Future<void> close() async {
-    return await db.close();
+    await db.close();
   }
 
   @override
-  Future<int?> insertHabit(HabitData habitData) {
+  Future<int?> insertHabit(HabitData habitData) async {
+    if (!_isInitialized) {
+      await _initializeDB(inMemory);
+    }
     return db.habitsDao.insertHabit(habitData);
   }
 
   @override
-  Future<int?> editHabitDetails(HabitData newData) {
+  Future<int?> editHabitDetails(HabitData newData) async {
+    if (!_isInitialized) {
+      await _initializeDB(inMemory);
+    }
     return db.habitsDao.editHabitDetails(newData);
   }
 
   @override
-  Future<List<HabitData>?> getAllHabits() {
+  Future<List<HabitData>?> getAllHabits() async {
+    if (!_isInitialized) {
+      await _initializeDB(inMemory);
+    }
     return db.habitsDao.getAllHabits();
   }
 
   @override
-  Future<List<HabitData>?> getTodayHabits() {
+  Future<List<HabitData>?> getTodayHabits() async {
+    if (!_isInitialized) {
+      await _initializeDB(inMemory);
+    }
     return db.habitsDao.getTodayHabits();
   }
 
   @override
-  Future<int?> deleteHabit(int id) {
+  Future<int?> deleteHabit(int id) async {
+    if (!_isInitialized) {
+      await _initializeDB(inMemory);
+    }
     return db.habitsDao.deleteHabit(id);
   }
 
   @override
-  Future<int?> toggleArchiveHabit(int id) {
+  Future<int?> toggleArchiveHabit(int id) async {
+    if (!_isInitialized) {
+      await _initializeDB(inMemory);
+    }
     return db.habitsDao.toggleArchiveHabit(id);
   }
 
   @override
-  Future<int?> logHabit(LogData logData) {
+  Future<int?> logHabit(LogData logData) async {
+    if (!_isInitialized) {
+      await _initializeDB(inMemory);
+    }
     return db.habitsLogDao.insertLog(logData);
   }
 
   @override
   Future<Map<int, List<Map<DateTime, double?>>>> getLog(
     List<HabitData> habits,
-  ) {
+  ) async {
+    if (!_isInitialized) {
+      await _initializeDB(inMemory);
+    }
     return db.habitsLogDao.getLog(habits);
   }
 
   @override
-  Future<int?> insertCategory(CategoryData categoryData) {
+  Future<int?> insertCategory(CategoryData categoryData) async {
+    if (!_isInitialized) {
+      await _initializeDB(inMemory);
+    }
     return db.categoriesDao.insertCategory(categoryData);
   }
 
   @override
-  Future<CategoryData?> getCategory(int id) {
+  Future<CategoryData?> getCategory(int id) async {
+    if (!_isInitialized) {
+      await _initializeDB(inMemory);
+    }
     return db.categoriesDao.getCategory(id);
   }
 
   @override
-  Future<List<CategoryData>?> getAllCategories() {
+  Future<List<CategoryData>?> getAllCategories() async {
+    if (!_isInitialized) {
+      await _initializeDB(inMemory);
+    }
     return db.categoriesDao.getAllCategories();
   }
 
   @override
-  Future<int?> editCategory(CategoryData newData) {
+  Future<int?> editCategory(CategoryData newData) async {
+    if (!_isInitialized) {
+      await _initializeDB(inMemory);
+    }
     return db.categoriesDao.editCategory(newData);
   }
 }

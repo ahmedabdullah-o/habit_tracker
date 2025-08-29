@@ -10,7 +10,7 @@ import 'package:habit_tracker/core/entities/habit_data.dart';
 import 'package:logging/logging.dart';
 
 void main() async {
-  final providerContainer = ProviderContainer();
+  ProviderContainer providerContainer = ProviderContainer();
   Idatabase? database;
 
   setUpAll(() async {
@@ -28,7 +28,7 @@ void main() async {
 
   tearDown(() async {
     await database!.close();
-    database = null;
+    providerContainer.invalidate(databaseProvider);
   });
 
   group('Drift Database Test -', () {
@@ -50,9 +50,10 @@ void main() async {
             color: Value(Colors.black),
             iconCodePoint: Value(23),
           );
+          await database!.insertCategory(categoryData);
           List<CategoryData>? query = await database!.getAllCategories();
-          expect(query!.length, 1);
-          expect(query[0].name, categoryData.name);
+          expect(query?.length ?? 0, 1);
+          expect(query![0].name, categoryData.name);
           expect(query[0].color, categoryData.color);
           expect(query[0].iconCodePoint, categoryData.iconCodePoint);
         },

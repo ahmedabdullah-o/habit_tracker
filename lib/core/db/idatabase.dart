@@ -3,8 +3,10 @@ import 'package:habit_tracker/core/entities/habit_data.dart';
 import 'package:habit_tracker/core/entities/log_data.dart';
 
 abstract class Idatabase {
-  Future<void> open();
+  /// This is used to clear in-memory database which is useful when testing.
+  // Future<void> clearMemory();
 
+  /// Closes the DB :)
   Future<void> close();
 
   /// Returns the habit row id.
