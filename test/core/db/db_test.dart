@@ -178,6 +178,45 @@ void main() async {
           expect(query!.length, 3);
         },
       );
+      test(
+        'editHabit() should not change the id, or absent values, but only change assigned properties.',
+        () async {
+          final categoryData = CategoryData(
+            name: Value('CategName'),
+            color: Value(Colors.purple),
+            iconCodePoint: Value(23),
+          );
+
+          final categoryId = await database!.insertCategory(categoryData);
+
+          final habit = HabitData(
+            name: Value('habit'),
+            desc: Value('before edit'),
+            categoryId: Value(categoryId!),
+            startDatetime: Value(DateTime.now()),
+            endDatetime: Value(null),
+            reminderTime: Value(TimeOfDay.now()),
+            repeatEveryNDays: Value(1),
+          );
+
+          final habitId = await database!.insertHabit(habit);
+
+          final queryBefore = await database!.getAllHabits();
+
+          HabitData newData = queryBefore![0];
+
+          newData.name = Value.absent();
+          newData.desc = Value('after edit');
+
+          await database!.editHabitDetails(newData);
+
+          final queryAfter = (await database!.getAllHabits())![0];
+
+          expect(queryAfter.id.value, habitId);
+          expect(queryAfter.name.value, 'habit');
+          expect(queryAfter.desc.value, 'after edit');
+        },
+      );
     });
   });
 }

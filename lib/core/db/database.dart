@@ -44,7 +44,7 @@ class Database implements Idatabase {
 
   @override
   Future<void> close() async {
-    await db.close();
+    return await db.close();
   }
 
   @override
@@ -52,7 +52,7 @@ class Database implements Idatabase {
     if (!_isInitialized) {
       await _initializeDB(inMemory);
     }
-    return db.habitsDao.insertHabit(habitData);
+    return await db.habitsDao.insertHabit(habitData);
   }
 
   @override
@@ -60,7 +60,7 @@ class Database implements Idatabase {
     if (!_isInitialized) {
       await _initializeDB(inMemory);
     }
-    return db.habitsDao.editHabitDetails(newData);
+    return await db.habitsDao.editHabitDetails(newData);
   }
 
   @override
@@ -68,7 +68,7 @@ class Database implements Idatabase {
     if (!_isInitialized) {
       await _initializeDB(inMemory);
     }
-    return db.habitsDao.getAllHabits();
+    return await db.habitsDao.getAllHabits();
   }
 
   @override
@@ -76,7 +76,7 @@ class Database implements Idatabase {
     if (!_isInitialized) {
       await _initializeDB(inMemory);
     }
-    return db.habitsDao.getTodayHabits();
+    return await db.habitsDao.getTodayHabits();
   }
 
   @override
@@ -84,7 +84,7 @@ class Database implements Idatabase {
     if (!_isInitialized) {
       await _initializeDB(inMemory);
     }
-    return db.habitsDao.deleteHabit(id);
+    return await db.habitsDao.deleteHabit(id);
   }
 
   @override
@@ -92,7 +92,7 @@ class Database implements Idatabase {
     if (!_isInitialized) {
       await _initializeDB(inMemory);
     }
-    return db.habitsDao.toggleArchiveHabit(id);
+    return await db.habitsDao.toggleArchiveHabit(id);
   }
 
   @override
@@ -100,7 +100,7 @@ class Database implements Idatabase {
     if (!_isInitialized) {
       await _initializeDB(inMemory);
     }
-    return db.habitsLogDao.insertLog(logData);
+    return await db.habitsLogDao.insertLog(logData);
   }
 
   @override
@@ -110,7 +110,7 @@ class Database implements Idatabase {
     if (!_isInitialized) {
       await _initializeDB(inMemory);
     }
-    return db.habitsLogDao.getLog(habits);
+    return await db.habitsLogDao.getLog(habits);
   }
 
   @override
@@ -118,7 +118,7 @@ class Database implements Idatabase {
     if (!_isInitialized) {
       await _initializeDB(inMemory);
     }
-    return db.categoriesDao.insertCategory(categoryData);
+    return await db.categoriesDao.insertCategory(categoryData);
   }
 
   @override
@@ -126,7 +126,7 @@ class Database implements Idatabase {
     if (!_isInitialized) {
       await _initializeDB(inMemory);
     }
-    return db.categoriesDao.getCategory(id);
+    return await db.categoriesDao.getCategory(id);
   }
 
   @override
@@ -134,7 +134,7 @@ class Database implements Idatabase {
     if (!_isInitialized) {
       await _initializeDB(inMemory);
     }
-    return db.categoriesDao.getAllCategories();
+    return await db.categoriesDao.getAllCategories();
   }
 
   @override
@@ -142,6 +142,6 @@ class Database implements Idatabase {
     if (!_isInitialized) {
       await _initializeDB(inMemory);
     }
-    return db.categoriesDao.editCategory(newData);
+    return await db.categoriesDao.editCategory(newData);
   }
 }

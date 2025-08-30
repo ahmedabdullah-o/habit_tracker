@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 import 'package:habit_tracker/core/db/app_database.dart';
 import 'package:habit_tracker/core/db/tables/habits.dart';
+import 'package:habit_tracker/core/db/tables/habits_details.dart';
 import 'package:habit_tracker/core/entities/days_of_week.dart';
 import 'package:habit_tracker/core/entities/habit_data.dart';
 import 'package:habit_tracker/core/extensions/habit_data_extensions.dart';
@@ -9,7 +10,7 @@ import 'package:logging/logging.dart';
 
 part 'habits_dao.g.dart';
 
-@DriftAccessor(tables: [Habits])
+@DriftAccessor(tables: [Habits, HabitsDetails])
 class HabitsDao extends DatabaseAccessor<AppDatabase> with _$HabitsDaoMixin {
   HabitsDao(super.db);
 
@@ -28,7 +29,7 @@ class HabitsDao extends DatabaseAccessor<AppDatabase> with _$HabitsDaoMixin {
 
   Future<void> _validateHabitData(HabitData habitData) async {
     _logger.fine(
-      '_validateHabitData: Validating habit data for habit: ${habitData.name.value}',
+      '_validateHabitData: Validating habit data for habit: ${habitData.name == Value.absent() ? 'Value.absent()' : habitData.name.value}',
     );
 
     // Check if both repeat are mutually exclusive.
@@ -219,7 +220,7 @@ class HabitsDao extends DatabaseAccessor<AppDatabase> with _$HabitsDaoMixin {
       'editHabitDetails: Current cache state - _habitsCache: ${_habitsCache?.length ?? 'null'}, _habitsTodayCache: ${_habitsTodayCache?.length ?? 'null'}',
     );
 
-    _validateHabitData(newDetails);
+    await _validateHabitData(newDetails);
 
     if (newDetails.id == Value.absent() ||
         newDetails.currentVersion == Value.absent()) {
@@ -243,7 +244,7 @@ class HabitsDao extends DatabaseAccessor<AppDatabase> with _$HabitsDaoMixin {
         "${newDetails.reminderTime.value.hour.toString().padLeft(2, '0')}:${newDetails.reminderTime.value.minute.toString().padLeft(2, '0')}";
 
     try {
-      transaction(() async {
+      await transaction(() async {
         _logger.fine('editHabitDetails: Starting edit transaction');
 
         // Here we edit the currentVersion in the main habits table which is
@@ -342,8 +343,8 @@ class HabitsDao extends DatabaseAccessor<AppDatabase> with _$HabitsDaoMixin {
         );
         return newVersionNum.value;
       });
-    } catch (e) {
-      _logger.severe('editHabitDetails: Error during editHabitDetails', e);
+    } catch (e, s) {
+      _logger.severe('editHabitDetails: Error during editHabitDetails', e, s);
       throw Exception(e.toString());
     }
     return null;
