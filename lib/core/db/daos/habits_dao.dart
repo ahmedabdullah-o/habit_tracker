@@ -29,7 +29,7 @@ class HabitsDao extends DatabaseAccessor<AppDatabase> with _$HabitsDaoMixin {
 
   Future<void> _validateHabitData(HabitData habitData) async {
     _logger.fine(
-      '_validateHabitData: Validating habit data for habit: ${habitData.name == Value.absent() ? 'Value.absent()' : habitData.name.value}',
+      '_validateHabitData: Validating habit data for habit: ${habitData.name.value}',
     );
 
     // Check if both repeat are mutually exclusive.

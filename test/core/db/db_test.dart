@@ -18,6 +18,9 @@ void main() async {
     Logger.root.onRecord.listen((record) {
       if (kDebugMode) {
         print('${record.level.name}: ${record.loggerName}: ${record.message}');
+        if (record.error != null) {
+          print('${record.error}\n${record.stackTrace}');
+        }
       }
     });
   });
@@ -205,7 +208,6 @@ void main() async {
 
           HabitData newData = queryBefore![0];
 
-          newData.name = Value.absent();
           newData.desc = Value('after edit');
 
           await database!.editHabitDetails(newData);
