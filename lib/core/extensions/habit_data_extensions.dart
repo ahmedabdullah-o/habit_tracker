@@ -3,6 +3,9 @@ import 'package:habit_tracker/core/entities/habit_data.dart';
 
 extension HabitDataExtensions on HabitData {
   bool isDueToday() {
+    if (startDatetime.value.isAfter(DateTime.now())) {
+      return false;
+    }
     if (repeatOnDaysOfWeek.value != null) {
       int todayIndex = DateTime.now().weekday;
       todayIndex = todayIndex == 7 ? 0 : todayIndex;

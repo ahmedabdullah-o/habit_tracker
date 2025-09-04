@@ -219,6 +219,41 @@ void main() async {
           expect(queryAfter.desc.value, 'after edit');
         },
       );
+      test('getTodayHabit() should only return habits due today', () async {
+        final categoryData = CategoryData(
+          name: Value('CategName'),
+          color: Value(Colors.purple),
+          iconCodePoint: Value(23),
+        );
+
+        final categoryId = await database!.insertCategory(categoryData);
+
+        final habit = [
+          HabitData(
+            name: Value('due today'),
+            desc: Value('desc'),
+            categoryId: Value(categoryId!),
+            startDatetime: Value(DateTime.now()),
+            endDatetime: Value(null),
+            reminderTime: Value(TimeOfDay.now()),
+            repeatEveryNDays: Value(1),
+          ),
+          HabitData(
+            name: Value('due tomorrow'),
+            desc: Value('desc'),
+            categoryId: Value(categoryId),
+            startDatetime: Value(DateTime.now().add(Duration(days: 1))),
+            endDatetime: Value(null),
+            reminderTime: Value(TimeOfDay.now()),
+            repeatEveryNDays: Value(1),
+          ),
+        ];
+        await database!.insertHabit(habit[0]);
+        await database!.insertHabit(habit[1]);
+        final query = await database!.getTodayHabits();
+        expect(query!.length, 1);
+        expect(query[0].name.value, 'due today');
+      });
     });
   });
 }
