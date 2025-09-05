@@ -6,6 +6,7 @@ import 'package:habit_tracker/core/entities/days_of_week.dart';
 import 'package:habit_tracker/core/entities/habit_data.dart';
 import 'package:habit_tracker/core/extensions/habit_data_extensions.dart';
 import 'package:habit_tracker/core/extensions/string_extensions.dart';
+import 'package:habit_tracker/core/extensions/value_extensions.dart';
 import 'package:logging/logging.dart';
 
 part 'habits_dao.g.dart';
@@ -29,7 +30,7 @@ class HabitsDao extends DatabaseAccessor<AppDatabase> with _$HabitsDaoMixin {
 
   Future<void> _validateHabitData(HabitData habitData) async {
     _logger.fine(
-      '_validateHabitData: Validating habit data for habit: ${habitData.name.value}',
+      '_validateHabitData: Validating habit data for habit: ${habitData.name.safeValue ?? 'null'}',
     );
 
     // Check if both repeat are mutually exclusive.
@@ -82,7 +83,7 @@ class HabitsDao extends DatabaseAccessor<AppDatabase> with _$HabitsDaoMixin {
 
   Future<int?> insertHabit(HabitData habitData) async {
     _logger.info(
-      'insertHabit: Starting insertHabit for: ${habitData.name.value}',
+      'insertHabit: Starting insertHabit for: ${habitData.name.safeValue ?? 'null'}',
     );
     _logger.fine(
       'insertHabit: Current cache state - _habitsCache: ${_habitsCache?.length ?? 'null'}, _habitsTodayCache: ${_habitsTodayCache?.length ?? 'null'}',
@@ -214,6 +215,62 @@ class HabitsDao extends DatabaseAccessor<AppDatabase> with _$HabitsDaoMixin {
   }
 
   Future<int?> editHabitDetails(HabitData newDetails) async {
+    // replacing all absent values with values from the latest version
+    // of habit details
+    final query =
+        await (select(habitsDetails)
+              ..where((u) => u.habitId.equals(newDetails.id.value))
+              ..where((u) => u.version.equals(newDetails.currentVersion.value)))
+            .getSingleOrNull();
+
+    if (query == null) {
+      throw Exception('the habit you\'re trying to edit doesn\'t exist');
+    }
+
+    newDetails = HabitData(
+      id: newDetails.id,
+      currentVersion: newDetails.currentVersion,
+      name: newDetails.name == Value.absent()
+          ? Value(query.name)
+          : newDetails.name,
+      desc: newDetails.desc == Value.absent()
+          ? Value(query.description)
+          : newDetails.desc,
+      categoryId: newDetails.categoryId == Value.absent()
+          ? Value(query.categoryId)
+          : newDetails.categoryId,
+      startDatetime: newDetails.startDatetime == Value.absent()
+          ? Value(query.startDatetime)
+          : newDetails.startDatetime,
+      endDatetime: newDetails.endDatetime == Value.absent()
+          ? Value(query.endDatetime)
+          : newDetails.endDatetime,
+      reminderTime: newDetails.reminderTime == Value.absent()
+          ? Value(query.reminderTime!.toTimeOfDay())
+          : newDetails.reminderTime,
+      repeatOnDaysOfWeek: newDetails.repeatOnDaysOfWeek == Value.absent()
+          ? Value(DaysOfWeek.parseFromDB(query.repeatOnDaysOfWeek))
+          : newDetails.repeatOnDaysOfWeek,
+      repeatEveryNDays: newDetails.repeatEveryNDays == Value.absent()
+          ? Value(query.repeatEveryNDays)
+          : newDetails.repeatEveryNDays,
+      targetUnit: newDetails.targetUnit == Value.absent()
+          ? Value(query.targetUnit)
+          : newDetails.targetUnit,
+      targetQuantity: newDetails.targetQuantity == Value.absent()
+          ? Value(query.targetQuantity)
+          : newDetails.targetQuantity,
+      goalCompletionRate: newDetails.goalCompletionRate == Value.absent()
+          ? Value(query.goalCompletionRate)
+          : newDetails.goalCompletionRate,
+      goalDeadline: newDetails.goalDeadline == Value.absent()
+          ? Value(query.goalDeadline)
+          : newDetails.goalDeadline,
+      isArchived: newDetails.isArchived == Value.absent()
+          ? Value(query.isArchived)
+          : newDetails.isArchived,
+    );
+
     _logger.info(
       'editHabitDetails: Starting editHabitDetails for habit ID: ${newDetails.id.value}',
     );
@@ -361,10 +418,6 @@ class HabitsDao extends DatabaseAccessor<AppDatabase> with _$HabitsDaoMixin {
       _logger.fine(
         'getAllHabits: Returning cached habits (${_habitsCache!.length} items)',
       );
-      _logger.finer('getAllHabits: Cached habits:');
-      for (final habit in _habitsCache!) {
-        _logger.finer('getAllHabits: ${habit.toString()}');
-      }
       return _habitsCache;
     }
 
@@ -587,7 +640,7 @@ class HabitsDao extends DatabaseAccessor<AppDatabase> with _$HabitsDaoMixin {
         'toggleArchiveHabit: Toggling archive status from ${currentVersion.isArchived} to ${newValue.value}',
       );
 
-      return editHabitDetails(
+      return await editHabitDetails(
         HabitData(
           id: Value(id),
           currentVersion: Value(exists.currentVersion),
@@ -600,8 +653,12 @@ class HabitsDao extends DatabaseAccessor<AppDatabase> with _$HabitsDaoMixin {
           isArchived: newValue,
         ),
       );
-    } catch (e) {
-      _logger.severe('toggleArchiveHabit: Error during toggleArchiveHabit', e);
+    } catch (e, s) {
+      _logger.severe(
+        'toggleArchiveHabit: Error during toggleArchiveHabit',
+        e,
+        s,
+      );
       throw Exception(e.toString());
     }
   }

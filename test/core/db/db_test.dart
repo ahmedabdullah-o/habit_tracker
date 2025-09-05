@@ -294,6 +294,61 @@ void main() async {
           expect(selectQuery[0].name.value, 'dont delete');
         },
       );
+      test('habit.isArchived should be false by default', () async {
+        final categoryData = CategoryData(
+          name: Value('CategName'),
+          color: Value(Colors.purple),
+          iconCodePoint: Value(23),
+        );
+
+        final categoryId = await database!.insertCategory(categoryData);
+
+        final habit = HabitData(
+          name: Value('habit'),
+          desc: Value('before edit'),
+          categoryId: Value(categoryId!),
+          startDatetime: Value(DateTime.now()),
+          endDatetime: Value(null),
+          reminderTime: Value(TimeOfDay.now()),
+          repeatEveryNDays: Value(1),
+        );
+        await database!.insertHabit(habit);
+        final query = await database!.getAllHabits();
+        expect(query![0].isArchived.value, false);
+      });
+      test(
+        'toggleArchiveHabit() should flip habit.isArchived in cache and database',
+        () async {
+          final categoryData = CategoryData(
+            name: Value('CategName'),
+            color: Value(Colors.purple),
+            iconCodePoint: Value(23),
+          );
+
+          final categoryId = await database!.insertCategory(categoryData);
+
+          final habit = HabitData(
+            name: Value('habit'),
+            desc: Value('desc'),
+            categoryId: Value(categoryId!),
+            startDatetime: Value(DateTime.now()),
+            endDatetime: Value(null),
+            reminderTime: Value(TimeOfDay.now()),
+            repeatEveryNDays: Value(1),
+          );
+          final habitId = await database!.insertHabit(habit);
+          {
+            await database!.toggleArchiveHabit(habitId!);
+            final query = await database!.getAllHabits();
+            expect(query![0].isArchived.value, true);
+          }
+          {
+            await database!.toggleArchiveHabit(habitId);
+            final query = await database!.getAllHabits();
+            expect(query![0].isArchived.value, false);
+          }
+        },
+      );
     });
   });
 }
