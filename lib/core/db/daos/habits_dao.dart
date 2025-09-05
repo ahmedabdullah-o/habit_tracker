@@ -167,6 +167,7 @@ class HabitsDao extends DatabaseAccessor<AppDatabase> with _$HabitsDaoMixin {
         // habits should be shown represented in this order for
         // convinence, it's more likely that the user would want to
         // see his upcoming habits first.
+        habitData.id = Value(rowId!);
         if (_habitsCache == null) {
           _logger.fine(
             'insertHabit: _habitsCache is null. invoking getAllHabits()',
@@ -547,8 +548,8 @@ class HabitsDao extends DatabaseAccessor<AppDatabase> with _$HabitsDaoMixin {
         );
         return null;
       }
-    } catch (e) {
-      _logger.severe('deleteHabit: Error during deleteHabit', e);
+    } catch (e, s) {
+      _logger.severe('deleteHabit: Error during deleteHabit', e, s);
       throw Exception(e.toString());
     }
   }

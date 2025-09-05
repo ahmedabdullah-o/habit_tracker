@@ -254,6 +254,46 @@ void main() async {
         expect(query!.length, 1);
         expect(query[0].name.value, 'due today');
       });
+      test(
+        'when insert 2 habits and delete 1 using deleteHabit(), one habit should be remaining in the database',
+        () async {
+          final categoryData = CategoryData(
+            name: Value('CategName'),
+            color: Value(Colors.purple),
+            iconCodePoint: Value(23),
+          );
+
+          final categoryId = await database!.insertCategory(categoryData);
+
+          final habit = [
+            HabitData(
+              name: Value('dont delete'),
+              desc: Value('desc'),
+              categoryId: Value(categoryId!),
+              startDatetime: Value(DateTime.now()),
+              endDatetime: Value(null),
+              reminderTime: Value(TimeOfDay.now()),
+              repeatEveryNDays: Value(1),
+            ),
+            HabitData(
+              name: Value('delete'),
+              desc: Value('desc'),
+              categoryId: Value(categoryId),
+              startDatetime: Value(DateTime.now().add(Duration(days: 1))),
+              endDatetime: Value(null),
+              reminderTime: Value(TimeOfDay.now()),
+              repeatEveryNDays: Value(1),
+            ),
+          ];
+          await database!.insertHabit(habit[0]);
+          final habitId = await database!.insertHabit(habit[1]);
+          final deleteQuery = await database!.deleteHabit(habitId!);
+          expect(deleteQuery, isPositive);
+          final selectQuery = await database!.getAllHabits();
+          expect(selectQuery!.length, 1);
+          expect(selectQuery[0].name.value, 'dont delete');
+        },
+      );
     });
   });
 }
