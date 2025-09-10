@@ -1,7 +1,6 @@
 import 'package:drift/drift.dart';
 import 'package:habit_tracker/core/db/app_database.dart';
 import 'package:habit_tracker/core/db/tables/habits_log.dart';
-import 'package:habit_tracker/core/entities/habit_data.dart';
 import 'package:habit_tracker/core/entities/log_data.dart';
 
 part 'habits_log_dao.g.dart';
@@ -27,28 +26,30 @@ class HabitsLogDao extends DatabaseAccessor<AppDatabase>
     int op = await into(db.habitsLog).insert(
       HabitsLogCompanion.insert(
         habitId: logData.habitId.value,
-        habitsDetailsVersion: currentVersion,
+        habitDetailsVersion: currentVersion,
+        logDatetime: logData.datetime,
         state: logData.state,
       ),
     );
     return op;
   }
 
-  Future<Map<int, List<Map<DateTime, double?>>>> getLog(
-    List<HabitData> habits,
-  ) async {
-    List<int> habitsIds = habits.map((row) => row.id.value).toList();
-
+  Future<Map<int, List<LogData>>> getLog(List<int> habitIds) async {
     try {
       final query = await (db.select(
         habitsLog,
-      )..where((u) => u.habitId.isIn(habitsIds))).get();
-      Map<int, List<Map<DateTime, double?>>> out = {};
+      )..where((u) => u.habitId.isIn(habitIds))).get();
+      Map<int, List<LogData>> out = {};
       for (final item in query) {
-        if (!out.containsKey(item.habitId)) {
-          out[item.habitId] = [];
-        }
-        out[item.habitId]!.add({item.logDatetime: item.state});
+        if (out[item.habitId] == null) out[item.habitId] = [];
+        out[item.habitId]!.add(
+          LogData(
+            habitId: Value(item.habitId),
+            habitDetailsVersion: Value(item.habitDetailsVersion),
+            state: Value(item.state),
+            datetime: Value(item.logDatetime),
+          ),
+        );
       }
       return out;
     } catch (e) {

@@ -104,13 +104,13 @@ class Database implements Idatabase {
   }
 
   @override
-  Future<Map<int, List<Map<DateTime, double?>>>> getLog(
-    List<HabitData> habits,
+  Future<Map<int, List<LogData>>> getLog(
+    List<int> habitIds,
   ) async {
     if (!_isInitialized) {
       await _initializeDB(inMemory);
     }
-    return await db.habitsLogDao.getLog(habits);
+    return await db.habitsLogDao.getLog(habitIds);
   }
 
   @override

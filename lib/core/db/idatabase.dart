@@ -3,9 +3,6 @@ import 'package:habit_tracker/core/entities/habit_data.dart';
 import 'package:habit_tracker/core/entities/log_data.dart';
 
 abstract class Idatabase {
-  /// This is used to clear in-memory database which is useful when testing.
-  // Future<void> clearMemory();
-
   /// Closes the DB :)
   Future<void> close();
 
@@ -40,8 +37,8 @@ abstract class Idatabase {
   /// if null is returned then there is no such **undeleted** habit with this id.
   Future<int?> logHabit(LogData logData);
 
-  /// Return a map with the habitId as the key and a list of maps of DateTime and state.
-  Future<Map<int, List<Map<DateTime, double?>>>> getLog(List<HabitData> habits);
+  /// Return a map with the habitId as the key and a list of LogData objects as the value.
+  Future<Map<int, List<LogData>>> getLog(List<int> habitIds);
 
   /// Inserts a new category into the database.
   ///

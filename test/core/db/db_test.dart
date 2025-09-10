@@ -7,6 +7,7 @@ import 'package:habit_tracker/core/db/database_provider.dart';
 import 'package:habit_tracker/core/db/idatabase.dart';
 import 'package:habit_tracker/core/entities/category_data.dart';
 import 'package:habit_tracker/core/entities/habit_data.dart';
+import 'package:habit_tracker/core/entities/log_data.dart';
 import 'package:logging/logging.dart';
 
 void main() async {
@@ -89,7 +90,7 @@ void main() async {
         },
       );
     });
-    group('Habits Table -', () {
+    group('Habits & Habits Details Table -', () {
       test('habits table should be empty by default', () async {
         final query = await database!.getAllHabits();
         expect(query, null);
@@ -349,6 +350,37 @@ void main() async {
           }
         },
       );
+    });
+    group('Habits Log Table -', () {
+      test('test insertLog()', () async {
+        final categoryData = CategoryData(
+          name: Value('CategName'),
+          color: Value(Colors.purple),
+          iconCodePoint: Value(23),
+        );
+        final categoryId = await database!.insertCategory(categoryData);
+        final habitData = HabitData(
+          name: Value('name'),
+          desc: Value('desc'),
+          categoryId: Value(categoryId!),
+          startDatetime: Value(DateTime.now()),
+          endDatetime: Value(null),
+          reminderTime: Value(TimeOfDay.now()),
+          repeatEveryNDays: Value(2),
+        );
+        final habitId = await database!.insertHabit(habitData);
+        await database!.logHabit(
+          LogData(habitId: Value(habitId!), state: Value(1), habitDetailsVersion: Value(1)),
+        );
+        habitData.id = Value(habitId);
+        habitData.currentVersion = Value(1);
+        final query = await database!.getLog([habitData.id.value]);
+        expect(query.length, 1);
+        expect(query[1]!.length, 1);
+        expect(query[1]![0].habitId.value, 1);
+        expect(query[1]![0].habitDetailsVersion.value, 1);
+        expect(query[1]![0].state.value, 1.0);
+      });
     });
   });
 }

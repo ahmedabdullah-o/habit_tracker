@@ -9,7 +9,7 @@ import 'package:habit_tracker/core/db/tables/habits_details.dart';
 class HabitsLog extends Table {
   late final id = integer().autoIncrement()(),
       habitId = integer().references(Habits, #id)(),
-      habitsDetailsVersion = integer().references(HabitsDetails, #version)(),
+      habitDetailsVersion = integer().references(HabitsDetails, #version)(),
       logDatetime = dateTime().withDefault(currentDateAndTime)(),
       state = real().nullable()();
 }
