@@ -38,7 +38,7 @@ abstract class Idatabase {
   Future<int?> logHabit(LogData logData);
 
   /// Return a map with the habitId as the key and a list of LogData objects as the value.
-  Future<Map<int, List<LogData>>> getLog(List<int> habitIds);
+  Future<Map<int, List<LogData>>?> getLog(List<int> habitIds);
 
   /// Inserts a new category into the database.
   ///

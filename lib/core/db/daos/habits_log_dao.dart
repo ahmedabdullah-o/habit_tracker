@@ -34,14 +34,15 @@ class HabitsLogDao extends DatabaseAccessor<AppDatabase>
     return op;
   }
 
-  Future<Map<int, List<LogData>>> getLog(List<int> habitIds) async {
+  Future<Map<int, List<LogData>>?> getLog(List<int> habitIds) async {
     try {
       final query = await (db.select(
         habitsLog,
       )..where((u) => u.habitId.isIn(habitIds))).get();
-      Map<int, List<LogData>> out = {};
+      Map<int, List<LogData>>? out;
       for (final item in query) {
-        if (out[item.habitId] == null) out[item.habitId] = [];
+        out ??= {};
+        out[item.habitId] ??= [];
         out[item.habitId]!.add(
           LogData(
             habitId: Value(item.habitId),
