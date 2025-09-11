@@ -12,7 +12,6 @@ class CategoriesDao extends DatabaseAccessor<AppDatabase>
     with _$CategoriesDaoMixin {
   CategoriesDao(super.db);
 
-  
   Future<int?> insertCategory(CategoryData categoryData) async {
     if (categoryData.id != Value.absent()) {
       throw Exception(
@@ -48,7 +47,6 @@ class CategoriesDao extends DatabaseAccessor<AppDatabase>
     }
   }
 
-  
   Future<CategoryData?> getCategory(int id) async {
     try {
       final category = await (select(
@@ -69,7 +67,6 @@ class CategoriesDao extends DatabaseAccessor<AppDatabase>
     }
   }
 
-  
   Future<List<CategoryData>?> getAllCategories() async {
     try {
       final query = await (select(
@@ -95,7 +92,6 @@ class CategoriesDao extends DatabaseAccessor<AppDatabase>
     }
   }
 
-  
   Future<int?> editCategory(CategoryData newData) async {
     try {
       final duplicate =
@@ -106,7 +102,9 @@ class CategoriesDao extends DatabaseAccessor<AppDatabase>
                 ))
               .getSingleOrNull();
       if (duplicate == null) {
-        (update(db.categories)..where((u) => u.id.equals(newData.id.value))).write(
+        (update(
+          db.categories,
+        )..where((u) => u.id.equals(newData.id.value))).write(
           CategoriesCompanion(
             name: newData.name,
             color: Value(newData.color.value.toARGB32()),

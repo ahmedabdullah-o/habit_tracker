@@ -104,9 +104,7 @@ class Database implements Idatabase {
   }
 
   @override
-  Future<Map<int, List<LogData>>?> getLog(
-    List<int> habitIds,
-  ) async {
+  Future<Map<int, List<LogData>>?> getLog(List<int> habitIds) async {
     if (!_isInitialized) {
       await _initializeDB(inMemory);
     }
