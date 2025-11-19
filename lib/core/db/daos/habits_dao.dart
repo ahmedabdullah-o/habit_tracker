@@ -81,7 +81,7 @@ class HabitsDao extends DatabaseAccessor<AppDatabase> with _$HabitsDaoMixin {
     _logger.fine('_validateHabitData: Habit data validation passed');
   }
 
-  Future<Habit?> _is_exist_habit(int id) async {
+  Future<Habit?> _isExistHabit(int id) async {
     return await (select(habits)
           ..where((u) => u.isDeleted.equals(false))
           ..where((u) => u.id.equals(id)))
@@ -580,7 +580,7 @@ class HabitsDao extends DatabaseAccessor<AppDatabase> with _$HabitsDaoMixin {
     _logger.info('deleteHabit: Starting deleteHabit for ID: $id');
 
     try {
-      final exists = await _is_exist_habit(id);
+      final exists = await _isExistHabit(id);
 
       if (exists != null) {
         _logger.fine('deleteHabit: Habit exists, marking as deleted');
@@ -615,7 +615,7 @@ class HabitsDao extends DatabaseAccessor<AppDatabase> with _$HabitsDaoMixin {
     _logger.info('toggleArchiveHabit: Starting toggleArchiveHabit for ID: $id');
 
     try {
-      final exists = await _is_exist_habit(id);
+      final exists = await _isExistHabit(id);
 
       if (exists == null) {
         _logger.warning('toggleArchiveHabit: Habit with ID $id not found');
