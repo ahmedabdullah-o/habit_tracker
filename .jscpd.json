@@ -1,0 +1,8 @@
+
+{
+  "reporters": ["console", "html"],
+  "threshold": 0,
+  "ignore": [
+    "test/**"
+  ]
+}
