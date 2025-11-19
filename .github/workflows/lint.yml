@@ -26,7 +26,8 @@ jobs:
           VALIDATE_KOTLIN: false
           DEFAULT_BRANCH: main
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          JSCPD_EXCLUDE: "test/**"
+          LINTER_RULES_PATH: .github/linters
+          VALIDATE_JSCPD: true
 
   flutter-lint:
     name: Flutter Analyze & Format Check
