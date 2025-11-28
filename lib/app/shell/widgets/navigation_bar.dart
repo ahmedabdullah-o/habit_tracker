@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:habit_tracker/core/enums/svg_icon_data_enums.dart';
 import 'package:habit_tracker/core/style/colors.dart' as app;
+import 'package:habit_tracker/core/style/fonts.dart';
 import 'package:habit_tracker/core/style/icons.dart';
 
 class NavigationBar extends StatelessWidget {
@@ -71,6 +72,7 @@ class _NavItem extends StatelessWidget {
                 )
               : SizedBox(width: 60, height: 32),
           Column(
+            spacing: -3.5,
             mainAxisSize: MainAxisSize.min,
             children: [
               SizedBox(
@@ -81,19 +83,9 @@ class _NavItem extends StatelessWidget {
                   width: 30,
                   height: 30,
                   color: app.Colors.text,
-                ).draw,
-              ),
-              Text(
-                label,
-                style: TextStyle(
-                  inherit: false,
-                  fontSize: 14,
-                  fontFamily: 'MPLUSRounded1c',
-                  color: app.Colors.text,
-                  fontWeight: active ? FontWeight.w800 : FontWeight.w500,
-                  letterSpacing: -0.5,
                 ),
               ),
+              Text(label, style: Fonts.navigationBarItemTextStyle(active)),
             ],
           ),
         ],
@@ -115,6 +107,7 @@ class _AddButton extends StatelessWidget {
             decoration: BoxDecoration(
               color: app.Colors.primary50,
               border: BoxBorder.all(
+                width: 2,
                 color: app.Colors.primary50,
                 strokeAlign: BorderSide.strokeAlignInside,
               ),
@@ -130,7 +123,7 @@ class _AddButton extends StatelessWidget {
                 width: 28,
                 height: 28,
                 color: app.Colors.text,
-              ).draw,
+              ),
             ),
           ),
         ],

@@ -1,5 +1,6 @@
 enum SvgIconData {
   checklist,
   loop,
-  add
+  add,
+  user
 }

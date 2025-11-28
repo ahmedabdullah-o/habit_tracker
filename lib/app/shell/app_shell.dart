@@ -15,9 +15,13 @@ class AppShell extends ConsumerWidget {
     return Stack(
       children: [
         // App Bar
-        Positioned(left: 0, right: 0, top: 0, child: app.TopBar()),
+        Positioned(left: 0, right: 0, top: 0, child: app.TopBar(currentPath)),
         // Page content
-        Positioned.fill(child: child),
+        Positioned.fill(
+          top: 48 + MediaQuery.of(context).padding.top,
+          bottom: 80 + MediaQuery.of(context).padding.bottom,
+          child: child,
+        ),
         // bottom nav bar
         Positioned(
           left: 0,

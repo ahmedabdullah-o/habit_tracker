@@ -39,6 +39,11 @@ class MainApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final notifications = ref.watch(notificationsProvider);
     notifications.init();
-    return MaterialApp.router(routerConfig: _router);
+    return SafeArea(
+      child: MaterialApp.router(
+        routerConfig: _router,
+        debugShowCheckedModeBanner: false,
+      ),
+    );
   }
 }
