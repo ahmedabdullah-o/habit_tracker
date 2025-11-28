@@ -1,7 +1,7 @@
 import 'dart:ui';
 
-class AppColors {
-  AppColors._(); // no instantiation
+class Colors {
+  Colors._(); // no instantiation
 
   // Branding
   static const primary = Color(0xFF7CCCDE);

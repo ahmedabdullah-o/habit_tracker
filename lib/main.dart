@@ -1,14 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:habit_tracker/app/shell/app_shell.dart';
 import 'package:habit_tracker/core/services/notifications/notifications_provider.dart';
+import 'package:habit_tracker/core/style/colors.dart' as app;
+import 'package:habit_tracker/features/habits/presentation/habits_screen.dart';
+import 'package:habit_tracker/features/home/presentation/screens/home_screen.dart';
 
 final _router = GoRouter(
-  routes: [GoRoute(path: '/', builder: (context, state) => AppShell())],
+  routes: [
+    ShellRoute(
+      builder: (context, state, child) => AppShell(child: child),
+      routes: [
+        GoRoute(path: '/home', builder: (context, state) => HomeScreen()),
+        GoRoute(path: '/habits', builder: (context, state) => HabitsScreen()),
+      ],
+    ),
+  ],
+  initialLocation: '/home',
 );
 
 void main() {
+  SystemChrome.setSystemUIOverlayStyle(
+    SystemUiOverlayStyle(
+      systemNavigationBarColor: app.Colors.foreground,
+      systemNavigationBarDividerColor: app.Colors.foreground,
+      statusBarColor: app.Colors.background,
+    ),
+  );
   runApp(ProviderScope(child: const MainApp()));
 }
 
