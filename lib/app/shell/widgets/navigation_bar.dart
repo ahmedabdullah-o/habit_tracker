@@ -72,7 +72,6 @@ class _NavItem extends StatelessWidget {
                 )
               : SizedBox(width: 60, height: 32),
           Column(
-            spacing: -3.5,
             mainAxisSize: MainAxisSize.min,
             children: [
               SizedBox(

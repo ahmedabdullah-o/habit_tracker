@@ -20,6 +20,7 @@ class Fonts {
       fontWeight: active ? FontWeight.w800 : FontWeight.w500,
       letterSpacing: -0.5,
       fontFamily: 'MPLUSRounded1c',
+      height: 1.26,
     );
   }
 }

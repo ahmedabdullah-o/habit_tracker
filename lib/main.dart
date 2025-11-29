@@ -41,6 +41,7 @@ class MainApp extends ConsumerWidget {
     notifications.init();
     return SafeArea(
       child: MaterialApp.router(
+        color: app.Colors.background,
         routerConfig: _router,
         debugShowCheckedModeBanner: false,
       ),
