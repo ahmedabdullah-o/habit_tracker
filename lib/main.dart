@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -7,6 +8,7 @@ import 'package:habit_tracker/core/services/notifications/notifications_provider
 import 'package:habit_tracker/core/style/colors.dart' as app;
 import 'package:habit_tracker/features/habits/presentation/habits_screen.dart';
 import 'package:habit_tracker/features/home/presentation/screens/home_screen.dart';
+import 'package:logging/logging.dart';
 
 final _router = GoRouter(
   routes: [
@@ -21,7 +23,23 @@ final _router = GoRouter(
   initialLocation: '/home',
 );
 
+void _loggerConfig() {
+  Logger.root.level = Level.ALL;
+  Logger.root.onRecord.listen((record) {
+    if (kDebugMode) {
+      debugPrint(
+        '${record.level.name}: ${record.loggerName}: ${record.message}',
+      );
+      if (record.error != null) {
+        debugPrint('${record.error}\n${record.stackTrace}');
+      }
+    }
+  });
+}
+
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+
   SystemChrome.setSystemUIOverlayStyle(
     SystemUiOverlayStyle(
       systemNavigationBarColor: app.Colors.foreground,
@@ -29,6 +47,9 @@ void main() {
       statusBarColor: app.Colors.background,
     ),
   );
+
+  _loggerConfig();
+
   runApp(ProviderScope(child: const MainApp()));
 }
 

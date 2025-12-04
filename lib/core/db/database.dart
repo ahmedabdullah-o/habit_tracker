@@ -1,5 +1,6 @@
+import 'dart:io';
+
 import 'package:drift/native.dart';
-import 'package:drift_flutter/drift_flutter.dart';
 import 'package:habit_tracker/core/db/app_database.dart';
 import 'package:habit_tracker/core/db/idatabase.dart';
 import 'package:habit_tracker/core/entities/category_data.dart';
@@ -18,11 +19,8 @@ class Database implements Idatabase {
     db = inMemory
         ? AppDatabase(NativeDatabase.memory())
         : AppDatabase(
-            driftDatabase(
-              name: "DriftDatabase",
-              native: DriftNativeOptions(
-                databaseDirectory: () async => await getLibraryDirectory(),
-              ),
+            NativeDatabase(
+              File("${(await getApplicationDocumentsDirectory()).path}/app.db"),
             ),
           );
     _isInitialized = true;

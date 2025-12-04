@@ -32,7 +32,7 @@ class TopBar extends StatelessWidget {
                 ),
               ),
               SizedBox(width: 12),
-              Text(_title[currentPath] ?? '', style: Fonts.titleTextStyle),
+              Text(_title[currentPath] ?? '', style: Fonts.topBarTitle),
             ],
           ),
           _ProgressBar(40),

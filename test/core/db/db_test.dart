@@ -18,9 +18,11 @@ void main() async {
     Logger.root.level = Level.ALL;
     Logger.root.onRecord.listen((record) {
       if (kDebugMode) {
-        print('${record.level.name}: ${record.loggerName}: ${record.message}');
+        debugPrint(
+          '${record.level.name}: ${record.loggerName}: ${record.message}',
+        );
         if (record.error != null) {
-          print('${record.error}\n${record.stackTrace}');
+          debugPrint('${record.error}\n${record.stackTrace}');
         }
       }
     });

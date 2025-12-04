@@ -84,7 +84,7 @@ class _NavItem extends StatelessWidget {
                   color: app.Colors.text,
                 ),
               ),
-              Text(label, style: Fonts.navigationBarItemTextStyle(active)),
+              Text(label, style: Fonts.navigationBarItem(active)),
             ],
           ),
         ],
